@@ -2,6 +2,12 @@
 
 Render json with go templates from the command line
 
+## Install
+
+```shell
+go get github.com/bluebrown/jpipe
+```
+
 ## Usage
 
 ```bash
