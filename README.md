@@ -28,6 +28,17 @@ jpipe < path/to/input.json
 curl localhost | jpipe
 ```
 
+## Flags
+
+```shell
+-n
+-newline
+      print new line at the end
+-t string
+-template string
+      alternative way to specify template
+```
+
 ## Example
 
 ```bash
