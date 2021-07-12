@@ -1,0 +1,6 @@
+.gitignore
+.git
+README.md
+jpipe
+Dockerfile
+.dockerignore
