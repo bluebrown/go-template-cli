@@ -2,13 +2,30 @@
 
 Render json with go templates from the command line
 
-## Install
+## Docker
+
+```shell
+curl -s https://jsonplaceholder.typicode.com/users/1 | docker run -i bluebrown/jpipe -n '{{.name}}'
+```
+
+## Local
 
 ```shell
 go get github.com/bluebrown/jpipe
 ```
 
 ## Usage
+
+```shell
+-n
+-newline
+      print new line at the end
+-t string
+-template string
+      alternative way to specify template
+```
+
+For example:
 
 ```bash
 $ echo '{"place": "bar"}' | jpipe 'lets go to the {{.place}}!'
@@ -26,17 +43,6 @@ The json input is read from pipe or redirection.
 ```bash
 jpipe < path/to/input.json
 curl localhost | jpipe
-```
-
-## Flags
-
-```shell
--n
--newline
-      print new line at the end
--t string
--template string
-      alternative way to specify template
 ```
 
 ## Example
