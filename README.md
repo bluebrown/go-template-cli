@@ -5,7 +5,9 @@ Render json with go templates from the command line
 ## Docker
 
 ```shell
-curl -s https://jsonplaceholder.typicode.com/users/1 | docker run -i bluebrown/jpipe -n '{{.name}}'
+$ curl --silent https://jsonplaceholder.typicode.com/users/1 \
+    | docker run --interactive bluebrown/jpipe \
+      --newline '{{.name}}'
 ```
 
 ## Local
