@@ -27,6 +27,8 @@ go get github.com/bluebrown/jpipe
       alternative way to specify template
 ```
 
+The templates are executed with the [text/template](https://pkg.go.dev/text/template) package. That means so they are not injection safe while providing greater flexibility for the user. don't execute untrusted templates!
+
 For example:
 
 ```bash
@@ -46,6 +48,10 @@ The json input is read from pipe or redirection.
 jpipe < path/to/input.json
 curl localhost | jpipe
 ```
+
+## Sprig
+
+[Sprig functions](http://masterminds.github.io/sprig/) have been added to provide more common functionally out of the box.
 
 ## Example
 

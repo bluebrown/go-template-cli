@@ -4,11 +4,15 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"html/template"
 	"io"
-	"io/ioutil"
 	"os"
+	"strings"
+	"text/template"
+
+	"github.com/Masterminds/sprig"
 )
+
+var t *template.Template
 
 func main() {
 
@@ -30,17 +34,16 @@ func main() {
 
 	// try first to read template from file path
 	if templatePath != "" {
-		content, err := ioutil.ReadFile(templatePath)
-		if err != nil {
-			exit(err)
+		parts := strings.Split(templatePath, "/")
+		name := parts[len(parts)-1]
+		t = template.Must(template.New(name).Funcs(sprig.TxtFuncMap()).ParseFiles(templatePath))
+	} else {
+		// if argument has been provided set the template
+		if flag.NArg() == 1 {
+			templateStr = flag.Arg(0)
 		}
-		templateStr = string(content)
-	}
-
-	// if argument has been provided,
-	// it overwrites the template at path
-	if flag.NArg() == 1 {
-		templateStr = flag.Arg(0)
+		// otherwise use default
+		t = template.Must(template.New("any").Funcs(sprig.TxtFuncMap()).Parse(templateStr))
 	}
 
 	info, err := os.Stdin.Stat()
@@ -62,11 +65,7 @@ func main() {
 		}
 	}
 
-	t, err := template.New("").Parse(`{{define "T"}}` + templateStr + `{{end}}`)
-	if err != nil {
-		exit(err)
-	}
-	if err = t.ExecuteTemplate(os.Stdout, "T", data); err != nil {
+	if err = t.Execute(os.Stdout, data); err != nil {
 		exit(err)
 	}
 
