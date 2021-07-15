@@ -1,7 +1,7 @@
 FROM golang as builder
 WORKDIR /src
 COPY . .
-RUN go build .
+RUN go build  -ldflags '-linkmode external -w -extldflags "-static"'  .
 
 FROM alpine
 COPY --from=builder /src/jpipe /run/app/jpipe

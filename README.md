@@ -18,18 +18,7 @@ go get github.com/bluebrown/jpipe
 
 ## Usage
 
-```shell
--n
--newline
-      print new line at the end
--t string
--template string
-      alternative way to specify template
-```
-
 The templates are executed with the [text/template](https://pkg.go.dev/text/template) package. That means so they are not injection safe while providing greater flexibility for the user. don't execute untrusted templates!
-
-For example:
 
 ```bash
 $ echo '{"place": "bar"}' | jpipe 'lets go to the {{.place}}!'
@@ -47,6 +36,17 @@ The json input is read from pipe or redirection.
 ```bash
 jpipe < path/to/input.json
 curl localhost | jpipe
+```
+
+### Flags
+
+```shell
+-n
+-newline
+      print new line at the end
+-t string
+-template string
+      alternative way to specify template
 ```
 
 ## Sprig
