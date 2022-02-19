@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -10,22 +9,19 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig"
+	"gopkg.in/yaml.v2"
 )
 
-var t *template.Template
-
 func main() {
-
+	var t *template.Template
 	var templatePath string
-	var newline bool
+	var noNewline bool
 	var templateStr = "{{.}}"
 
 	flag.StringVar(&templatePath, "t", "", "")
 	flag.StringVar(&templatePath, "template", "", "alternative way to specify template")
-
-	flag.BoolVar(&newline, "n", false, "")
-	flag.BoolVar(&newline, "newline", false, "print new line at the end")
-
+	flag.BoolVar(&noNewline, "n", false, "")
+	flag.BoolVar(&noNewline, "no-newline", false, "do not print a new line at the end")
 	flag.Parse()
 
 	if flag.NArg() > 1 {
@@ -55,7 +51,7 @@ func main() {
 	if info.Mode()&os.ModeCharDevice == 0 {
 		// read the input data from stdin
 		// must be valid json
-		dec := json.NewDecoder(os.Stdin)
+		dec := yaml.NewDecoder(os.Stdin)
 		for {
 			if err := dec.Decode(&data); err == io.EOF {
 				break
@@ -65,11 +61,29 @@ func main() {
 		}
 	}
 
+	if data == nil {
+		fmt.Fprintf(os.Stderr, `Usage of tpl:
+  -n
+  -no-newline
+    do not print a new line at the end
+  -t string
+  -template string
+    alternative way to specify template
+Examples:
+  Standard input:
+    echo '{"place": "bar"}' | tpl 'lets go to the {{.place}}!'
+  File:
+    tpl -t path/to/template < path/to/input.json
+ERROR: no data provided
+`)
+		os.Exit(1)
+	}
+
 	if err = t.Execute(os.Stdout, data); err != nil {
 		exit(err)
 	}
 
-	if newline {
+	if !noNewline {
 		fmt.Println()
 	}
 }

@@ -1,18 +1,12 @@
 FROM golang as builder
-WORKDIR /src
-COPY . .
-RUN go build  -ldflags '-linkmode external -w -extldflags "-static"'  .
+WORKDIR /workspace
+COPY go.* ./
+RUN go mod download
+COPY *.go ./
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o tpl .
 
-FROM alpine
-COPY --from=builder /src/jpipe /run/app/jpipe
-ENTRYPOINT [ "/run/app/jpipe" ]
-ARG UID=8080
-ARG USER="jpipe"
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home /run/app/jpipe \
-    --no-create-home \
-    --uid "$UID" \
-    "$USER"
-USER $USER
+FROM gcr.io/distroless/static:nonroot as final
+WORKDIR /
+COPY --from=builder /workspace/tpl .
+USER 65532:65532
+ENTRYPOINT ["/tpl"]

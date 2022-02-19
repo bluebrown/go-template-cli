@@ -1,6 +1,8 @@
-.gitignore
 .git
-README.md
-jpipe
-Dockerfile
 .dockerignore
+.gitignore
+Dockerfile
+LICENSE
+Makefile
+README.md
+tpl
