@@ -47,9 +47,7 @@ go install github.com/bluebrown/tpl
 ### Docker
 
 ```shell
-curl --silent https://jsonplaceholder.typicode.com/users/1 \
-  | docker run --interactive bluebrown/tpl \
-    --newline '{{.name}}'
+curl -s https://jsonplaceholder.typicode.com/users/1 | docker run -i bluebrown/tpl '{{.name}}'
 ```
 
 ## Example
