@@ -1,5 +1,6 @@
 ver=1.0.0
 bindir=bin
+container_cli=docker
 
 binaries: bindir dynmaic static
 
@@ -19,12 +20,12 @@ bindir:
 	rm -rf $(bindir)
 	mkdir -p $(bindir)
 
-build:
-	podman build -t bluebrown/tpl -t bluebrown/tpl:$(ver) .
+image:
+	$(container_cli) build -t bluebrown/tpl -t bluebrown/tpl:$(ver) .
 
-publish:
-	podman push bluebrown/tpl
-	podman push bluebrown/tpl:$(ver)
+push:
+	$(container_cli) push bluebrown/tpl
+	$(container_cli) push bluebrown/tpl:$(ver)
 
 
-.PHONY: binaries dynamic static build publish
+.PHONY: binaries dynamic static bindir image push

@@ -64,7 +64,7 @@ go install github.com/bluebrown/tpl
 The binary is also available as a docker image.
 
 ```shell
-curl -s https://jsonplaceholder.typicode.com/users/1 | docker run -i bluebrown/tpl '{{.name}}'
+curl -s https://jsonplaceholder.typicode.com/users/1 | docker run -i bluebrown/tpl '{{ .name }}'
 ```
 
 ## Examples

@@ -1,12 +1,13 @@
-FROM golang as builder
+FROM golang
 WORKDIR /workspace
+RUN echo 'nobody:*:12345:12345:nobody:/_nonexistent:/bin/false' >passwd
 COPY go.* ./
 RUN go mod download
 COPY *.go ./
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o tpl .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -installsuffix static -a -o tpl .
 
-FROM gcr.io/distroless/static:nonroot as final
-WORKDIR /
-COPY --from=builder /workspace/tpl .
-USER 65532:65532
+FROM scratch
+COPY --from=0 /workspace/passwd /etc/passwd
+COPY --from=0 /workspace/tpl /tpl
 ENTRYPOINT ["/tpl"]
+USER nobody
