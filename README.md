@@ -41,7 +41,7 @@ Usage of tpl:
 
 ## Installation
 
-## Binary
+### Binary
 
 Download the binary from the [release page](https://github.com/bluebrown/tpl/releases). For example
 
@@ -51,7 +51,7 @@ tar -xzf tpl-amd64-static.tar.gz
 mv tpl-1.0.0-amd64-static /usr/local/bin/tpl
 ```
 
-## Go
+### Go
 
 If you have go installed, you can use the `go install` command to install the binary.
 
