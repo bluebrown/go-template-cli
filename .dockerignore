@@ -1,8 +1,9 @@
 .git
 .dockerignore
 .gitignore
+bin
 Dockerfile
 LICENSE
 Makefile
 README.md
-tpl
+tpl-*
