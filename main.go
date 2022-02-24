@@ -61,14 +61,14 @@ func main() {
 	if templatePath != "" {
 		parts := strings.Split(templatePath, "/")
 		name := parts[len(parts)-1]
-		t = template.Must(template.New(name).Funcs(sprig.TxtFuncMap()).ParseFiles(templatePath))
+		t = template.Must(baseTpl(name).ParseFiles(templatePath))
 	} else {
 		// if argument has been provided set the template
 		if flag.NArg() == 1 {
 			templateStr = flag.Arg(0)
 		}
 		// otherwise use default
-		t = template.Must(template.New("any").Funcs(sprig.TxtFuncMap()).Parse(templateStr))
+		t = template.Must(baseTpl("arg").Parse(templateStr))
 	}
 
 	info, err := os.Stdin.Stat()
@@ -114,6 +114,26 @@ ERROR: no data provided
 	if !noNewline {
 		fmt.Println()
 	}
+}
+
+func baseTpl(name string) *template.Template {
+	funcMap := map[string]interface{}{
+		"toYaml": func(v interface{}) string {
+			b, err := yaml.Marshal(v)
+			if err != nil {
+				return ""
+			}
+			return string(b)
+		},
+		"mustToYaml": func(v interface{}) (string, error) {
+			b, err := yaml.Marshal(v)
+			if err != nil {
+				return "", err
+			}
+			return string(b), nil
+		},
+	}
+	return template.New(name).Funcs(funcMap).Funcs(sprig.TxtFuncMap())
 }
 
 func exit(a ...interface{}) {

@@ -39,6 +39,15 @@ Usage of tpl:
         show this message
 ```
 
+## Functions
+
+In addition to the [Sprig functions](http://masterminds.github.io/sprig/), the following functions are available:
+
+Function    | Description                                                     | Returns       | Example
+ ---------- | --------------------------------------------------------------- | ------------- | -----------
+toYaml      | converts the input to yaml                                      | string        | `tpl '{{ toYaml . }}'`
+mustToYaml  | converts the input to yaml, returns an error if encoding fails  | string, error | `tpl '{{ mustToYaml . }}'`
+
 ## Installation
 
 ### Binary
