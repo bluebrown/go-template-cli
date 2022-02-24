@@ -22,23 +22,38 @@ The template is either read from the first positional argument or from a path sp
 echo '{"place": "bar"}' | tpl 'lets go to the {{.place}}!'
 # File
 echo '{"place": "bar"}' | tpl --template path/to/template
-
 ```
 
 ### Flags
 
 ```console
--n
--no-newline
-      do not print a new line at the end
--t string
--template string
-      alternative way to specify template
+Usage of tpl:
+  -t string
+  -template string
+        alternative way to specify template
+  -n
+  -no-newline
+        do not print a new line at the end
+  -h
+  -help
+        show this message
 ```
 
 ## Installation
 
+## Binary
+
+Download the binary from the [release page](https://github.com/bluebrown/tpl/releases). For example
+
+```bash
+curl -fsSLO https://github.com/bluebrown/tpl/releases/download/v1.0.0/tpl-amd64-static.tar.gz
+tar -xzf tpl-amd64-static.tar.gz
+mv tpl-1.0.0-amd64-static /usr/local/bin/tpl
+```
+
 ## Go
+
+If you have go installed, you can use the `go install` command to install the binary.
 
 ```bash
 go install github.com/bluebrown/tpl
@@ -46,14 +61,38 @@ go install github.com/bluebrown/tpl
 
 ### Docker
 
+The binary is also available as a docker image.
+
 ```shell
 curl -s https://jsonplaceholder.typicode.com/users/1 | docker run -i bluebrown/tpl '{{.name}}'
 ```
 
-## Example
+## Examples
+
+## Convert YAML to JSON
 
 ```bash
-$ curl -s https://jsonplaceholder.typicode.com/users | tpl '<table>
+echo 'foo: [bar, baz]' | tpl '{{ toPrettyJson . }}'
+```
+
+<details>
+<summary>Output</summary>
+
+```json
+{
+  "foo": [
+    "bar",
+    "baz"
+  ]
+}
+```
+
+</details>
+
+## Render HTML from JSON
+
+```bash
+curl -s https://jsonplaceholder.typicode.com/users | tpl '<table>
   <caption>My Address Nook</caption>
   <tr>
     <th>Name</th>
@@ -76,10 +115,11 @@ $ curl -s https://jsonplaceholder.typicode.com/users | tpl '<table>
     </td>
   </tr>
   {{- end -}}
-</table>' | less
+</table>'
 ```
 
-The result looks like this
+<details>
+<summary>Output</summary>
 
 <table>
   <caption>My Address Nook</caption>
@@ -219,3 +259,5 @@ The result looks like this
       </ul>
     </td>
   </tr></table>
+
+</details>

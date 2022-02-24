@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.2
+	github.com/icza/dyno v0.0.0-20210726202311-f1bafe5d9996
 	gopkg.in/yaml.v2 v2.3.0
 )
 

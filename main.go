@@ -9,20 +9,49 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig/v3"
+	"github.com/icza/dyno"
 	"gopkg.in/yaml.v2"
 )
+
+func helptext() {
+	fmt.Print(`Usage of tpl:
+  -t string
+  -template string
+	alternative way to specify template
+  -n
+  -no-newline
+	do not print a new line at the end
+  -h
+  -help
+	show this message
+Examples:
+Standard input:
+	echo '{"place": "bar"}' | tpl 'lets go to the {{ .place }}!'
+File:
+	tpl -t path/to/template < path/to/input.json
+`)
+	os.Exit(0)
+}
 
 func main() {
 	var t *template.Template
 	var templatePath string
 	var noNewline bool
 	var templateStr = "{{.}}"
+	var showHelp bool
 
 	flag.StringVar(&templatePath, "t", "", "")
 	flag.StringVar(&templatePath, "template", "", "alternative way to specify template")
 	flag.BoolVar(&noNewline, "n", false, "")
 	flag.BoolVar(&noNewline, "no-newline", false, "do not print a new line at the end")
+	flag.BoolVar(&showHelp, "h", false, "")
+	flag.BoolVar(&showHelp, "help", false, "show this message")
 	flag.Parse()
+
+	if showHelp {
+		helptext()
+		os.Exit(2)
+	}
 
 	if flag.NArg() > 1 {
 		exit("too many arguments")
@@ -62,7 +91,7 @@ func main() {
 	}
 
 	if data == nil {
-		fmt.Fprintf(os.Stderr, `Usage of tpl:
+		exit(`Usage of tpl:
   -n
   -no-newline
     do not print a new line at the end
@@ -76,10 +105,9 @@ Examples:
     tpl -t path/to/template < path/to/input.json
 ERROR: no data provided
 `)
-		os.Exit(1)
 	}
 
-	if err = t.Execute(os.Stdout, data); err != nil {
+	if err = t.Execute(os.Stdout, dyno.ConvertMapI2MapS(data)); err != nil {
 		exit(err)
 	}
 
