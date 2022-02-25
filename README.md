@@ -43,10 +43,11 @@ Usage of tpl:
 
 In addition to the [Sprig functions](http://masterminds.github.io/sprig/), the following functions are available:
 
-Function    | Description                                                     | Returns       | Example
- ---------- | --------------------------------------------------------------- | ------------- | -----------
-toYaml      | converts the input to yaml                                      | string        | `tpl '{{ toYaml . }}'`
-mustToYaml  | converts the input to yaml, returns an error if encoding fails  | string, error | `tpl '{{ mustToYaml . }}'`
+Function    | Description                                         | Returns       | Example
+------------|-----------------------------------------------------|---------------|------------------------------
+toYaml      | convert to yaml                                     | string        | `tpl '{{ toYaml . }}'`
+mustToYaml  | convert to yaml, errors if encoding fails           | string, error | `tpl '{{ mustToYaml . }}'`
+table       | convert to table, list of object or list of lists   | string        | `tpl '{{ table . }}'`
 
 ## Installation
 

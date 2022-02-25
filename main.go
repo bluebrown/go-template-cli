@@ -9,6 +9,7 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig/v3"
+	"github.com/bluebrown/tpl/funcs"
 	"github.com/icza/dyno"
 	"gopkg.in/yaml.v2"
 )
@@ -117,23 +118,7 @@ ERROR: no data provided
 }
 
 func baseTpl(name string) *template.Template {
-	funcMap := map[string]interface{}{
-		"toYaml": func(v interface{}) string {
-			b, err := yaml.Marshal(v)
-			if err != nil {
-				return ""
-			}
-			return string(b)
-		},
-		"mustToYaml": func(v interface{}) (string, error) {
-			b, err := yaml.Marshal(v)
-			if err != nil {
-				return "", err
-			}
-			return string(b), nil
-		},
-	}
-	return template.New(name).Funcs(funcMap).Funcs(sprig.TxtFuncMap())
+	return template.New(name).Funcs(funcs.TxtFuncMap()).Funcs(sprig.TxtFuncMap())
 }
 
 func exit(a ...interface{}) {

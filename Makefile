@@ -27,5 +27,9 @@ push:
 	$(container_cli) push bluebrown/tpl
 	$(container_cli) push bluebrown/tpl:$(ver)
 
+install: binaries
+	tar -xzf bin/tpl-amd64.tar.gz
+	sudo mv tpl-1.0.0-amd64 /usr/local/bin/tpl
 
-.PHONY: binaries dynamic static bindir image push
+
+.PHONY: binaries dynamic static bindir image push install
