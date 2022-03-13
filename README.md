@@ -6,7 +6,7 @@ The templates are executed with the [text/template](https://pkg.go.dev/text/temp
 
 ## Usage
 
-The input data is read from stdin via pipe or redirection.
+The input data is read from stdin via pipe or redirection. It is actually not required to provide any input data. If no input data is provided, the template is executed with nil data.
 
 ```bash
 # Redirection
