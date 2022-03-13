@@ -86,29 +86,9 @@ git clone https://github.com/bluebrown/tpl
 cd tpl && make install
 ```
 
-## Examples
+## Example
 
-## Convert YAML to JSON
-
-```bash
-echo 'foo: [bar, baz]' | tpl '{{ toPrettyJson . }}'
-```
-
-<details>
-<summary>Output</summary>
-
-```json
-{
-  "foo": [
-    "bar",
-    "baz"
-  ]
-}
-```
-
-</details>
-
-## Render HTML from JSON
+Review the [examples](https://github.com/bluebrown/tpl/tree/main/examples) directory, for more examples.
 
 ```bash
 curl -s https://jsonplaceholder.typicode.com/users | tpl '<table>
@@ -127,7 +107,7 @@ curl -s https://jsonplaceholder.typicode.com/users | tpl '<table>
     <td>
       <ul>
         {{- range $key, $val := .address }} {{ if ne $key "geo" }}
-        <li><strong>{{$key}}:</strong> &nbsp; {{$val}}</li>
+        <li><strong>{{ $key }}:</strong> &nbsp; {{ $val }}</li>
         {{- end -}}
         {{ end }}
       </ul>
