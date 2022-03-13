@@ -1,9 +1,9 @@
 FROM golang
 WORKDIR /workspace
 RUN echo 'nobody:*:65534:65534:nobody:/_nonexistent:/bin/false' >passwd
-COPY . ./
+COPY go.mod go.sum ./
 RUN go mod download
-COPY *.go ./
+COPY . ./
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -installsuffix static -a -o tpl .
 
 FROM scratch
