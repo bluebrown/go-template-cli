@@ -1,6 +1,6 @@
 ver=1.0.0
 bindir=bin
-container_cli=docker
+container_cli=podman
 
 binaries: bindir dynmaic static
 

@@ -2,6 +2,7 @@
 .dockerignore
 .gitignore
 bin
+examples
 Dockerfile
 LICENSE
 Makefile

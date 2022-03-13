@@ -91,23 +91,6 @@ func main() {
 		}
 	}
 
-	if data == nil {
-		exit(`Usage of tpl:
-  -n
-  -no-newline
-    do not print a new line at the end
-  -t string
-  -template string
-    alternative way to specify template
-Examples:
-  Standard input:
-    echo '{"place": "bar"}' | tpl 'lets go to the {{.place}}!'
-  File:
-    tpl -t path/to/template < path/to/input.json
-ERROR: no data provided
-`)
-	}
-
 	if err = t.Execute(os.Stdout, dyno.ConvertMapI2MapS(data)); err != nil {
 		exit(err)
 	}

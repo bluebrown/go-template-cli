@@ -2,6 +2,7 @@ package funcs
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -36,21 +37,30 @@ func Table(v interface{}) string {
 		return ""
 	}
 
+	w := new(tabwriter.Writer)
+	buf := new(bytes.Buffer)
+	w.Init(buf, 0, 8, 0, '\t', 0)
+	var err error
+
 	switch s[0].(type) {
 	case map[string]interface{}:
-		return mapTable(s)
+		err = mapTable(w, s)
 	case []interface{}:
-		return sliceTable(s)
+		err = sliceTable(w, s)
 	default:
 		return ""
 	}
 
+	if err != nil {
+		return ""
+	}
+
+	w.Flush()
+	return buf.String()
+
 }
 
-func mapTable(v []interface{}) string {
-	w := new(tabwriter.Writer)
-	buf := new(bytes.Buffer)
-	w.Init(buf, 0, 8, 0, '\t', 0)
+func mapTable(w *tabwriter.Writer, v []interface{}) error {
 
 	keys := []string{}
 	var vals []string
@@ -58,7 +68,7 @@ func mapTable(v []interface{}) string {
 	for i, row := range v {
 		r, ok := row.(map[string]interface{})
 		if !ok {
-			return ""
+			return errors.New("mapTable: row is not map[string]interface{}")
 		}
 
 		if i == 0 {
@@ -93,22 +103,17 @@ func mapTable(v []interface{}) string {
 			fmt.Fprintln(w, strings.Join(vals, "\t"))
 		}
 	}
-
-	w.Flush()
-	return buf.String()
+	return nil
 }
 
-func sliceTable(v []interface{}) string {
-	w := new(tabwriter.Writer)
-	buf := new(bytes.Buffer)
-	w.Init(buf, 0, 8, 0, '\t', 0)
+func sliceTable(w *tabwriter.Writer, v []interface{}) error {
 
 	var vals []string
 
 	for i, row := range v {
 		r, ok := row.([]interface{})
 		if !ok {
-			return ""
+			return errors.New("sliceTable: row is not []interface{}")
 		}
 
 		if i == 0 {
@@ -125,7 +130,5 @@ func sliceTable(v []interface{}) string {
 			fmt.Fprintln(w, strings.Join(vals, "\t"))
 		}
 	}
-
-	w.Flush()
-	return buf.String()
+	return nil
 }
