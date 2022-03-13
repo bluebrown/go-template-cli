@@ -80,7 +80,7 @@ func main() {
 	var data interface{}
 	if info.Mode()&os.ModeCharDevice == 0 {
 		// read the input data from stdin
-		// must be valid json
+		// must be valid yaml/json
 		dec := yaml.NewDecoder(os.Stdin)
 		for {
 			if err := dec.Decode(&data); err == io.EOF {
