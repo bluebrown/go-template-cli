@@ -77,6 +77,15 @@ The binary is also available as a [docker image](https://hub.docker.com/reposito
 curl -s https://jsonplaceholder.typicode.com/users/1 | docker run -i bluebrown/tpl '{{ .name }}'
 ```
 
+### From source
+
+Clone the repo and use the makefile to build the binary. The make install command will move the binary to /usr/local/bin.
+
+```bash
+git clone https://github.com/bluebrown/tpl
+cd tpl && make install
+```
+
 ## Examples
 
 ## Convert YAML to JSON
