@@ -25,7 +25,7 @@ func main() {
         do not print a new line at the end
     -h
     -help
-        show this message
+        show the help text
 Examples:
     Standard input:
         echo '{"place": "bar"}' | tpl 'lets go to the {{ .place }}!'
@@ -51,7 +51,7 @@ Examples:
 
 	if showHelp {
 		flag.Usage()
-		exit(0)
+		os.Exit(0)
 	}
 
 	if flag.NArg() > 1 {

@@ -28,15 +28,15 @@ echo '{"place": "bar"}' | tpl --template path/to/template
 
 ```console
 Usage of tpl:
-  -t string
-  -template string
+    -t string
+    -template string
         alternative way to specify template
-  -n
-  -no-newline
+    -n
+    -no-newline
         do not print a new line at the end
-  -h
-  -help
-        show this message
+    -h
+    -help
+        show the help text
 ```
 
 ## Functions
