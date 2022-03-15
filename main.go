@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
+	"path/filepath"
 	"text/template"
 
 	"github.com/Masterminds/sprig/v3"
@@ -14,27 +14,27 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func helptext() {
-	fmt.Print(`Usage of tpl:
-  -t string
-  -template string
-	alternative way to specify template
-  -n
-  -no-newline
-	do not print a new line at the end
-  -h
-  -help
-	show this message
-Examples:
-Standard input:
-	echo '{"place": "bar"}' | tpl 'lets go to the {{ .place }}!'
-File:
-	tpl -t path/to/template < path/to/input.json
-`)
-	os.Exit(0)
-}
-
 func main() {
+	flag.Usage = func() {
+		fmt.Print(`Usage of tpl:
+    -t string
+    -template string
+        alternative way to specify template
+    -n
+    -no-newline
+        do not print a new line at the end
+    -h
+    -help
+        show this message
+Examples:
+    Standard input:
+        echo '{"place": "bar"}' | tpl 'lets go to the {{ .place }}!'
+    File:
+        tpl -t path/to/template < path/to/input.json
+`,
+		)
+	}
+
 	var t *template.Template
 	var templatePath string
 	var noNewline bool
@@ -50,8 +50,8 @@ func main() {
 	flag.Parse()
 
 	if showHelp {
-		helptext()
-		os.Exit(2)
+		flag.Usage()
+		exit(0)
 	}
 
 	if flag.NArg() > 1 {
@@ -60,16 +60,14 @@ func main() {
 
 	// try first to read template from file path
 	if templatePath != "" {
-		parts := strings.Split(templatePath, "/")
-		name := parts[len(parts)-1]
-		t = template.Must(baseTpl(name).ParseFiles(templatePath))
+		t = template.Must(baseTpl(filepath.Base(templatePath)).ParseFiles(templatePath))
 	} else {
 		// if argument has been provided set the template
 		if flag.NArg() == 1 {
 			templateStr = flag.Arg(0)
 		}
 		// otherwise use default
-		t = template.Must(baseTpl("arg").Parse(templateStr))
+		t = template.Must(baseTpl("positional.arg").Parse(templateStr))
 	}
 
 	info, err := os.Stdin.Stat()
@@ -105,6 +103,8 @@ func baseTpl(name string) *template.Template {
 }
 
 func exit(a ...interface{}) {
+	flag.Usage()
+	fmt.Print("Error: ")
 	fmt.Fprintln(os.Stderr, a...)
 	os.Exit(1)
 }
