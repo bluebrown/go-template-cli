@@ -1,4 +1,4 @@
-# tpl
+# Go Template CLI (tpl)
 
 Render yaml and json with go templates from the command line.
 
@@ -7,7 +7,6 @@ The templates are executed with the [text/template](https://pkg.go.dev/text/temp
 ## Synopsis
 
 ```console
-Usage: tpl [options] [templates]
 Options:
   -f, --file stringArray      template file path. Can be specified multiple times
   -g, --glob stringArray      template file glob. Can be specified multiple times
