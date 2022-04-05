@@ -4,50 +4,66 @@ Render yaml and json with go templates from the command line.
 
 The templates are executed with the [text/template](https://pkg.go.dev/text/template) package. This means they come with the additional risks and benefits the text templates provide. Additionally, [Sprig functions](http://masterminds.github.io/sprig/) are available.
 
-## Usage
+## Synopsis
+
+```console
+Usage: tpl [options] [templates]
+Options:
+  -f, --file stringArray      template file path. Can be specified multiple times
+  -g, --glob stringArray      template file glob. Can be specified multiple times
+  -n, --name string           if specified, execute the template with the given name
+      --options stringArray   options to pass to the template engine
+  -d, --decoder string        decoder to use for input data. Supported values: json, yaml, toml, xml (default "json")
+      --no-newline            do not print newline at the end of the output
+  -h, --help                  show the help text
+  -v, --version               show the version
+      --debug                 enable debug mode
+```
+
+## Input Data
 
 The input data is read from stdin via pipe or redirection. It is actually not required to provide any input data. If no input data is provided, the template is executed with nil data.
 
 ```bash
 # Redirection
-tpl < path/to/input.json
+tpl '{{ . }}' < path/to/input.json
 # Pipe
-curl localhost | tpl
+curl localhost | tpl '{{ . }}'
+
+# nil data
+tpl '{{ . }}'
 ```
 
-The template is either read from the first positional argument or from a path specified via `--template` or `-t` flag.
+## Templates
+
+The root templates name is `_tpl.root` and positional arguments are parsed into this root template. That means while its possible to specify multiple arguments, they will overwrite each other unless they use the `define` keyword to define a named template that can be referenced later when executing the template. If a named templates is specified multiple times, the last one will override the previous ones.
+
+Templates from the flags --file and --glob are parsed in the order they are specified. So the override rules of the text/template package apply. If a file with the same name is specified multiple times, the last one wins. Even if they are in different directories.
+
+The behavior of the cli tries to stay consistent with the actual behavior of the go template engine.
+
+By default the root template is executed if at least one positional argument has been provided. Otherwise the first parsed file name is used to to determine which named template to execute since the root templates body is empty. It is always possible to choose another template to execute by using the --name flag.
 
 ```bash
-# Positional argument
-echo '{"place": "bar"}' | tpl 'lets go to the {{.place}}!'
-# File
-echo '{"place": "bar"}' | tpl --template path/to/template
+tpl '{{ . }}' --file foo.tpl --glob templates/*.tpl
 ```
 
-### Flags
+The ability to parse multiple templates makes sense when defining helper snippets and other named templates to reference using the builtin `template` keyword or the custom `include` function which can be used in pipelines.
 
-```console
-Usage of tpl:
-    -t string
-    -template string
-        alternative way to specify template
-    -n
-    -no-newline
-        do not print a new line at the end
-    -h
-    -help
-        show the help text
-```
+## Decoders
+
+By default input data is decoded as json and passed to the template to execute. It is possible to use an alternative decoder. The supported decoders are:
+
+- json
+- yaml
+- toml
+- xml
+
+While json could technically be decoded using the yaml decoder, this is not done by default for performance reasons.
 
 ## Functions
 
-In addition to the [Sprig functions](http://masterminds.github.io/sprig/), the following functions are available:
-
-Function    | Description                                         | Returns       | Example
-------------|-----------------------------------------------------|---------------|------------------------------
-toYaml      | convert to yaml                                     | string        | `tpl '{{ toYaml . }}'`
-mustToYaml  | convert to yaml, errors if encoding fails           | string, error | `tpl '{{ mustToYaml . }}'`
-table       | convert to table, list of object or list of lists   | string        | `tpl '{{ table . }}'`
+Next to the builtin functionality [Sprig functions](http://masterminds.github.io/sprig/) and [treasre-map functions](https://github.com/bluebrown/treasure-map) are available.
 
 ## Installation
 
@@ -58,7 +74,7 @@ Download the binary from the [release page](https://github.com/bluebrown/tpl/rel
 ```bash
 curl -fsSLO https://github.com/bluebrown/tpl/releases/download/v1.0.0/tpl-amd64-static.tar.gz
 tar -xzf tpl-amd64-static.tar.gz
-mv tpl-1.0.0-amd64-static /usr/local/bin/tpl
+mv tpl-0.1.0-amd64-static /usr/local/bin/tpl
 ```
 
 ### Go
@@ -74,7 +90,7 @@ go install github.com/bluebrown/tpl
 The binary is also available as a [docker image](https://hub.docker.com/repository/docker/bluebrown/tpl).
 
 ```shell
-curl -s https://jsonplaceholder.typicode.com/users/1 | docker run -i bluebrown/tpl '{{ .name }}'
+curl -s https://jsonplaceholder.typicode.com/users/1 | docker run -i bluebrown/tpl '{{ table . }}'
 ```
 
 ### From source
@@ -88,7 +104,7 @@ cd tpl && make install
 
 ## Example
 
-Review the [examples](https://github.com/bluebrown/tpl/tree/main/examples) directory, for more examples.
+Review the [examples](https://github.com/bluebrown/go-template-cli/tree/main/assets/examples) directory, for more examples.
 
 ```bash
 curl -s https://jsonplaceholder.typicode.com/users | tpl '<table>
