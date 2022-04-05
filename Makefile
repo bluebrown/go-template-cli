@@ -1,6 +1,6 @@
 ver=0.1.0
 bindir=bin
-container_cli=podman
+container_cli=docker
 cmd_dir=./cmd/
 
 ldflags=-X 'main.version=$(ver)' -X 'main.commit=$(shell git rev-parse HEAD)'
@@ -24,7 +24,7 @@ bindir:
 	mkdir -p $(bindir)
 
 image:
-	$(container_cli) build --build-arg ldflags="$(ldflags)" -t bluebrown/tpl -t bluebrown/tpl:$(ver) .
+	$(container_cli) build --file assets/container/Dockerfile --build-arg ldflags="$(ldflags)" -t bluebrown/tpl -t bluebrown/tpl:$(ver) .
 
 push:
 	$(container_cli) push bluebrown/tpl

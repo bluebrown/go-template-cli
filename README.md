@@ -72,7 +72,7 @@ Next to the builtin functionality [Sprig functions](http://masterminds.github.io
 Download the binary from the [release page](https://github.com/bluebrown/tpl/releases). For example
 
 ```bash
-curl -fsSLO https://github.com/bluebrown/tpl/releases/download/v1.0.0/tpl-amd64-static.tar.gz
+curl -fsSLO https://github.com/bluebrown/go-template-cli/releases/download/v0.1.0/tpl-amd64-static.tar.gz
 tar -xzf tpl-amd64-static.tar.gz
 mv tpl-0.1.0-amd64-static /usr/local/bin/tpl
 ```
@@ -90,7 +90,7 @@ go install github.com/bluebrown/tpl
 The binary is also available as a [docker image](https://hub.docker.com/repository/docker/bluebrown/tpl).
 
 ```shell
-curl -s https://jsonplaceholder.typicode.com/users/1 | docker run -i bluebrown/tpl '{{ table . }}'
+curl -s curl -s https://jsonplaceholder.typicode.com/todos | docker run -i bluebrown/tpl '{{ table . }}'
 ```
 
 ### From source
