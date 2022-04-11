@@ -81,7 +81,7 @@ mv tpl-0.1.0-amd64-static /usr/local/bin/tpl
 If you have go installed, you can use the `go install` command to install the binary.
 
 ```bash
-go install github.com/bluebrown/go-template-cli/cmd/tpl
+go install github.com/bluebrown/go-template-cli/cmd/tpl@latest
 ```
 
 ### Docker
