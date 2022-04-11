@@ -7,16 +7,16 @@ The templates are executed with the [text/template](https://pkg.go.dev/text/temp
 ## Synopsis
 
 ```console
+Usage: tpl [options] [templates]
 Options:
   -f, --file stringArray      template file path. Can be specified multiple times
   -g, --glob stringArray      template file glob. Can be specified multiple times
   -n, --name string           if specified, execute the template with the given name
-      --options stringArray   options to pass to the template engine
   -d, --decoder string        decoder to use for input data. Supported values: json, yaml, toml, xml (default "json")
+      --options stringArray   options to pass to the template engine
       --no-newline            do not print newline at the end of the output
   -h, --help                  show the help text
   -v, --version               show the version
-      --debug                 enable debug mode
 ```
 
 ## Input Data
@@ -71,9 +71,9 @@ Next to the builtin functions, sSprig functions](http://masterminds.github.io/sp
 Download the binary from the [release page](https://github.com/bluebrown/go-template-cli/releases). For example
 
 ```bash
-curl -fsSLO https://github.com/bluebrown/go-template-cli/releases/download/v0.1.0/tpl-amd64-static.tar.gz
+curl -fsSLO https://github.com/bluebrown/go-template-cli/releases/download/v0.1.1/tpl-amd64-static.tar.gz
 tar -xzf tpl-amd64-static.tar.gz
-mv tpl-0.1.0-amd64-static /usr/local/bin/tpl
+mv tpl-0.1.1-amd64-static /usr/local/bin/tpl
 ```
 
 ### Go
