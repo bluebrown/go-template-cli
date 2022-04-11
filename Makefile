@@ -1,7 +1,7 @@
-ver=0.1.0
+ver=0.1.1
 bindir=bin
 container_cli=docker
-cmd_dir=./cmd/
+cmd_dir=./cmd/tpl/
 
 ldflags=-X 'main.version=$(ver)' -X 'main.commit=$(shell git rev-parse HEAD)'
 

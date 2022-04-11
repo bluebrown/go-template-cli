@@ -1,8 +1,8 @@
 # Go Template CLI (tpl)
 
-Render yaml and json with go templates from the command line.
+Render json, yaml, toml & xml with go templates from the command line.
 
-The templates are executed with the [text/template](https://pkg.go.dev/text/template) package. This means they come with the additional risks and benefits the text templates provide. Additionally, [Sprig functions](http://masterminds.github.io/sprig/) are available.
+The templates are executed with the [text/template](https://pkg.go.dev/text/template) package. This means they come with the additional risks and benefits the text templates provide.
 
 ## Synopsis
 
@@ -62,13 +62,13 @@ While json could technically be decoded using the yaml decoder, this is not done
 
 ## Functions
 
-Next to the builtin functionality [Sprig functions](http://masterminds.github.io/sprig/) and [treasre-map functions](https://github.com/bluebrown/treasure-map) are available.
+Next to the builtin functions, sSprig functions](http://masterminds.github.io/sprig/) and [treasure-map functions](https://github.com/bluebrown/treasure-map) are available.
 
 ## Installation
 
 ### Binary
 
-Download the binary from the [release page](https://github.com/bluebrown/tpl/releases). For example
+Download the binary from the [release page](https://github.com/bluebrown/go-template-cli/releases). For example
 
 ```bash
 curl -fsSLO https://github.com/bluebrown/go-template-cli/releases/download/v0.1.0/tpl-amd64-static.tar.gz
@@ -81,7 +81,7 @@ mv tpl-0.1.0-amd64-static /usr/local/bin/tpl
 If you have go installed, you can use the `go install` command to install the binary.
 
 ```bash
-go install github.com/bluebrown/tpl
+go install github.com/bluebrown/go-template-cli/cmd/tpl@latest
 ```
 
 ### Docker
@@ -97,7 +97,7 @@ curl -s curl -s https://jsonplaceholder.typicode.com/todos | docker run -i blueb
 Clone the repo and use the makefile to build the binary. The make install command will move the binary to /usr/local/bin.
 
 ```bash
-git clone https://github.com/bluebrown/tpl
+git clone https://github.com/bluebrown/go-template-cli
 cd tpl && make install
 ```
 
