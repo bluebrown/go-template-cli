@@ -9,7 +9,7 @@ ARG ldflags
 RUN go build \
     -installsuffix static \
     -ldflags="${ldflags}" \
-    -a -o tpl ./cmd/
+    -a ./cmd/tpl
 
 FROM scratch
 COPY --from=0 /workspace/passwd /etc/passwd
