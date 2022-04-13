@@ -16,7 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/Masterminds/sprig/v3"
-	tm "github.com/bluebrown/treasure-map/pkg"
+	"github.com/bluebrown/treasure-map/funcs"
 )
 
 var (
@@ -57,7 +57,7 @@ func run() error {
 	// create the root template
 	tpl := template.New(rootTemplateName)
 	tpl.Option(options...)
-	tpl.Funcs(tm.MakeFuncMap(sprig.TxtFuncMap(), tpl))
+	tpl.Funcs(funcs.NewMap(sprig.TxtFuncMap(), tpl))
 
 	// parse the arguments
 	for _, arg := range flag.Args() {

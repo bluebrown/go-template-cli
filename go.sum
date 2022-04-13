@@ -6,8 +6,8 @@ github.com/Masterminds/semver/v3 v3.1.1 h1:hLg3sBzpNErnxhQtUy/mmLR2I9foDujNK030I
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
 github.com/Masterminds/sprig/v3 v3.2.2 h1:17jRggJu518dr3QaafizSXOjKYp94wKfABxUmyxvxX8=
 github.com/Masterminds/sprig/v3 v3.2.2/go.mod h1:UoaO7Yp8KlPnJIYWTFkMaqPUYKTfGFPhxNuwnnxkKlk=
-github.com/bluebrown/treasure-map v0.0.0-20220402111925-6faeaa97540e h1:3TUGmOz3qKzqlZxm+AT5YIpsnfJUOexON/gOvY7csQc=
-github.com/bluebrown/treasure-map v0.0.0-20220402111925-6faeaa97540e/go.mod h1:zBxH6iE3GL6igDRERl6Hqn8NauEmmP01p0rgSUnmLdk=
+github.com/bluebrown/treasure-map v0.0.0-20220413175655-d3f6cc2b66d4 h1:uMwMkxVk3QIFPtMbTHcQbPXWHHRTK9UNWRobCiLeS2U=
+github.com/bluebrown/treasure-map v0.0.0-20220413175655-d3f6cc2b66d4/go.mod h1:pb3qe1Rk4go+box3KQGJMqkaqRdDB5RZIosK2QwuPIM=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
