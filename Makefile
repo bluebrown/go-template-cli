@@ -1,4 +1,4 @@
-ver=0.1.1
+ver=0.1.2
 bindir=bin
 container_cli=docker
 cmd_dir=./cmd/tpl/

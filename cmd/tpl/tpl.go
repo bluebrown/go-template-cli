@@ -16,7 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/Masterminds/sprig/v3"
-	"github.com/bluebrown/treasure-map/funcs"
+	"github.com/bluebrown/treasure-map/textfunc"
 )
 
 var (
@@ -26,7 +26,7 @@ var (
 	options      []string
 	decoder      string
 	noNewline    bool
-	version      = "0.1.1"
+	version      = "0.1.2"
 	commit       = "unknown"
 	debugMode    bool
 	reflectMode  bool
@@ -35,6 +35,7 @@ var (
 const rootTemplateName = "_tpl.root"
 
 func main() {
+
 	setFlagUsage()
 	parseFlags()
 
@@ -57,7 +58,7 @@ func run() error {
 	// create the root template
 	tpl := template.New(rootTemplateName)
 	tpl.Option(options...)
-	tpl.Funcs(funcs.NewMap(sprig.TxtFuncMap(), tpl))
+	tpl.Funcs(textfunc.MapClosure(sprig.TxtFuncMap(), tpl))
 
 	// parse the arguments
 	for _, arg := range flag.Args() {
