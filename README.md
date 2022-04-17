@@ -1,6 +1,6 @@
 # Go Template CLI (tpl)
 
-Render json, yaml, toml & xml with go templates from the command line.
+Render json, yaml, & toml with go templates from the command line.
 
 The templates are executed with the [text/template](https://pkg.go.dev/text/template) package. This means they come with the additional risks and benefits the text templates provide.
 
@@ -12,7 +12,7 @@ Options:
   -f, --file stringArray      template file path. Can be specified multiple times
   -g, --glob stringArray      template file glob. Can be specified multiple times
   -n, --name string           if specified, execute the template with the given name
-  -d, --decoder string        decoder to use for input data. Supported values: json, yaml, toml, xml (default "json")
+  -d, --decoder string        decoder to use for input data. Supported values: json, yaml, toml (default "json")
       --options stringArray   options to pass to the template engine
       --no-newline            do not print newline at the end of the output
   -h, --help                  show the help text

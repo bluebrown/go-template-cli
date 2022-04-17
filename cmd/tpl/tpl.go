@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"errors"
 	"fmt"
 	"io"
@@ -151,10 +150,9 @@ type decode func(io.Reader, *any) error
 // a map of decoder functions
 func decoderMap() map[string]decode {
 	return map[string]decode{
+		"json": decodeJson,
 		"yaml": decodeYaml,
 		"toml": decodeToml,
-		"xml":  decodeXml,
-		"json": decodeJson,
 	}
 }
 
@@ -177,20 +175,6 @@ func decodeToml(in io.Reader, out *any) error {
 	dec := toml.NewDecoder(in)
 	_, err := dec.Decode(out)
 	return err
-}
-
-func decodeXml(in io.Reader, out *any) error {
-	dec := xml.NewDecoder(in)
-	for {
-		err := dec.Decode(out)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return err
-		}
-	}
-	return nil
 }
 
 func decodeJson(in io.Reader, out *any) error {
@@ -227,7 +211,7 @@ func parseFlags() {
 	flag.StringArrayVarP(&files, "file", "f", []string{}, "template file path. Can be specified multiple times")
 	flag.StringArrayVarP(&globs, "glob", "g", []string{}, "template file glob. Can be specified multiple times")
 	flag.StringVarP(&templateName, "name", "n", "", "if specified, execute the template with the given name")
-	flag.StringVarP(&decoder, "decoder", "d", "json", "decoder to use for input data. Supported values: json, yaml, toml, xml")
+	flag.StringVarP(&decoder, "decoder", "d", "json", "decoder to use for input data. Supported values: json, yaml, toml")
 	flag.StringArrayVar(&options, "options", []string{}, "options to pass to the template engine")
 	flag.BoolVar(&noNewline, "no-newline", false, "do not print newline at the end of the output")
 	flag.BoolVarP(&showHelp, "help", "h", false, "show the help text")
