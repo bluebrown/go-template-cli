@@ -26,13 +26,13 @@ var (
 	options      []string
 	decoder      string
 	noNewline    bool
-	version      = "0.1.2"
+	version      = "0.2.0"
 	commit       = "unknown"
 	debugMode    bool
 	reflectMode  bool
 )
 
-const rootTemplateName = "_tpl.root"
+const defaultTemplateName = "_gotpl_default"
 
 func main() {
 
@@ -41,8 +41,9 @@ func main() {
 
 	err := run()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
 		flag.Usage()
+		fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -56,7 +57,7 @@ func run() error {
 	var err error
 
 	// create the root template
-	tpl := template.New(rootTemplateName)
+	tpl := template.New(defaultTemplateName)
 	tpl.Option(options...)
 	tpl.Funcs(textfunc.MapClosure(sprig.TxtFuncMap(), tpl))
 
@@ -72,6 +73,7 @@ func run() error {
 	// to align with go's template package
 	fileIndex := 0
 	globIndex := 0
+
 	for _, arg := range os.Args[1:] {
 		if arg == "-f" || arg == "--file" {
 			// parse next file
@@ -103,12 +105,17 @@ func run() error {
 		return errors.New("no templates found")
 	}
 
-	// determine the template name to use
+	// determine the template to use
 	if templateName == "" {
-		if flag.NArg() > 0 {
-			templateName = rootTemplateName
-		} else if globIndex > 0 || fileIndex > 0 {
+		if len(flag.Args()) > 0 {
+			templateName = defaultTemplateName
+		} else if len(templates) == 1 {
 			templateName = templates[0].Name()
+		} else {
+			return errors.New(fmt.Sprintf(
+				"the --name flag is required when multiple templates are defined and no default template exists%s",
+				tpl.DefinedTemplates(),
+			))
 		}
 	}
 
@@ -209,7 +216,7 @@ func setFlagUsage() {
 		fmt.Printf("Examples:\n")
 		fmt.Printf("  tpl '{{ . }}' < data.json\n")
 		fmt.Printf("  tpl --file my-template.tpl < data.json\n")
-		fmt.Printf("  tpl --glob templates/* < data.json\n")
+		fmt.Printf("  tpl --glob templates/* --name foo.tpl < data.json\n")
 	}
 
 }
