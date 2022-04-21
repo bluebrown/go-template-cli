@@ -79,6 +79,7 @@ Download the binary from the [release page](https://github.com/bluebrown/go-temp
 
 ```bash
 curl -fsSL https://github.com/bluebrown/go-template-cli/releases/latest/download/tpl-linux-amd64 >tpl
+chmod 755 tpl
 ```
 
 ### Go
