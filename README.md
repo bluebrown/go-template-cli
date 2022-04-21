@@ -2,7 +2,7 @@
 
 Render json, yaml, & toml with go templates from the command line.
 
-The templates are executed with the [text/template](https://pkg.go.dev/text/template) package. This means they come with the additional risks and benefits the text templates provide.
+The templates are executed with the [text/template](https://pkg.go.dev/text/template) package. This means they come with the additional risks and benefits of the text template engine.
 
 ## Synopsis
 
@@ -28,7 +28,6 @@ The input data is read from stdin via pipe or redirection. It is actually not re
 tpl '{{ . }}' < path/to/input.json
 # Pipe
 curl localhost | tpl '{{ . }}'
-
 # nil data
 tpl '{{ . }}'
 ```
@@ -37,19 +36,21 @@ tpl '{{ . }}'
 
 The default templates name is `_gotpl_default` and positional arguments are parsed into this root template. That means while its possible to specify multiple arguments, they will overwrite each other unless they use the `define` keyword to define a named template that can be referenced later when executing the template. If a named template is parsed multiple times, the last one will override the previous ones.
 
-Templates from the flags --file and --glob are parsed in the order they are specified. So the override rules of the text/template package apply. If a file with the same name is specified multiple times, the last one wins. Even if they are in different directories.
+Templates from the flags `--file` and `--glob` are parsed in the order they are specified. So the override rules of the text/template package apply. If a file with the same name is specified multiple times, the last one wins. Even if they are in different directories.
 
 The behavior of the cli tries to stay consistent with the actual behavior of the go template engine.
 
-If the default template exists it will be used unless the --name flag is specified. If no default template exists because no positional argument has been provided, the template with the given file name is used, as long as only one file has been parsed. If multiple files have been parsed, the --name flag is required to avoid ambiguity.
+If the default template exists it will be used unless the `--name` flag is specified. If no default template exists because no positional argument has been provided, the template with the given file name is used, as long as only one file has been parsed. If multiple files have been parsed, the `--name` flag is required to avoid ambiguity.
 
 ```bash
-tpl '{{ . }}' --file foo.tpl --glob templates/*.tpl         # default will be used
-tpl --file foo.tpl                                          # foo.tpl will be used
-tpl --file foo.tpl --glob templates/*.tpl --name foo.tpl    # the --name flag is required to select a template by name
+tpl '{{ . }}' --file foo.tpl '--glob templates/*.tpl'         # default will be used
+tpl --file foo.tpl                                            # foo.tpl will be used
+tpl --file foo.tpl --glob 'templates/*.tpl' --name foo.tpl    # the --name flag is required to select a template by name
 ```
 
 The ability to parse multiple templates makes sense when defining helper snippets and other named templates to reference using the builtin `template` keyword or the custom `include` function which can be used in pipelines.
+
+note globs need to quotes to avoid shell expansion.
 
 ## Decoders
 
@@ -58,9 +59,13 @@ By default input data is decoded as json and passed to the template to execute. 
 - json
 - yaml
 - toml
-- xml
 
 While json could technically be decoded using the yaml decoder, this is not done by default for performance reasons.
+
+## Options
+
+The `--options` flag is passed to the template engine. Possible options can be found in the [documentation of the template engine](https://pkg.go.dev/text/template#Template.Option).
+The only option currently known is `missingkey`. Since the input data is decoded into `interface{}`, setting `missingkey=zero` will show `<no value>`, if the key does not exist, which is the same as the default. However, `missingkey=error` has some actual use cases.
 
 ## Functions
 

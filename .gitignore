@@ -1,3 +1,4 @@
 /bin
 tpl-*-amd64*
 *.tar.gz
+assets/ideas.md
