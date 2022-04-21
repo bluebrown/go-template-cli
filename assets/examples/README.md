@@ -15,11 +15,11 @@ curl -s https://jsonplaceholder.typicode.com/todos | tpl '{{ table . }}'
 ## Convert YAML to JSON
 
 ```bash
-echo 'foo: [bar, baz]' | tpl '{{ toPrettyJson . }}'
+echo 'foo: [bar, baz]' | tpl '{{ toPrettyJson . }}' -d yaml
 ```
 
 ## Create a Certificate
 
 ```bash
-tpl -t assets/examples/cert.yaml.tpl
+tpl -f assets/examples/cert.yaml.tpl
 ```
