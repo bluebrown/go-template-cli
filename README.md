@@ -9,14 +9,15 @@ The templates are executed with the [text/template](https://pkg.go.dev/text/temp
 ```console
 Usage: tpl [options] [templates]
 Options:
-  -f, --file stringArray      template file path. Can be specified multiple times
-  -g, --glob stringArray      template file glob. Can be specified multiple times
-  -n, --name string           if specified, execute the template with the given name
-  -d, --decoder string        decoder to use for input data. Supported values: json, yaml, toml (default "json")
-      --options stringArray   options to pass to the template engine
-      --no-newline            do not print newline at the end of the output
-  -h, --help                  show the help text
-  -v, --version               show the version
+  -f, --file stringArray     template file path. Can be specified multiple times
+  -g, --glob stringArray     template file glob. Can be specified multiple times
+  -n, --name string          if specified, execute the template with the given name
+  -d, --decoder string       decoder to use for input data. Supported values: json, yaml, toml (default "json")
+      --option stringArray   option to pass to the template engine. Can be specified multiple times
+      --no-newline           do not print newline at the end of the output
+  -h, --help                 show the help text
+      --usage                show the short usage text
+  -v, --version              show the version
 ```
 
 ## Input Data
