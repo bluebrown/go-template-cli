@@ -78,9 +78,7 @@ Next to the builtin functions, sSprig functions](http://masterminds.github.io/sp
 Download the binary from the [release page](https://github.com/bluebrown/go-template-cli/releases). For example
 
 ```bash
-curl -fsSLO https://github.com/bluebrown/go-template-cli/releases/download/v0.1.1/tpl-amd64-static.tar.gz
-tar -xzf tpl-amd64-static.tar.gz
-mv tpl-0.1.1-amd64-static /usr/local/bin/tpl
+curl -fsSL https://github.com/bluebrown/go-template-cli/releases/latest/download/tpl-linux-amd64 >tpl
 ```
 
 ### Go
