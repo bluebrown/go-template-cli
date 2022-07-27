@@ -70,7 +70,7 @@ The only option currently known is `missingkey`. Since the input data is decoded
 
 ## Functions
 
-Next to the builtin functions, sSprig functions](http://masterminds.github.io/sprig/) and [treasure-map functions](https://github.com/bluebrown/treasure-map) are available.
+Next to the builtin functions, [Sprig functions](http://masterminds.github.io/sprig/) and [treasure-map functions](https://github.com/bluebrown/treasure-map) are available.
 
 ## Installation
 
@@ -96,7 +96,7 @@ go install github.com/bluebrown/go-template-cli/cmd/tpl@latest
 The binary is also available as a [docker image](https://hub.docker.com/repository/docker/bluebrown/tpl).
 
 ```shell
-curl -s curl -s https://jsonplaceholder.typicode.com/todos | docker run -i bluebrown/tpl '{{ table . }}'
+curl -s https://jsonplaceholder.typicode.com/todos | docker run -i bluebrown/tpl '{{ table . }}'
 ```
 
 ### From source
