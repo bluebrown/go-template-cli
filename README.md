@@ -44,7 +44,7 @@ The behavior of the cli tries to stay consistent with the actual behavior of the
 If the default template exists it will be used unless the `--name` flag is specified. If no default template exists because no positional argument has been provided, the template with the given file name is used, as long as only one file has been parsed. If multiple files have been parsed, the `--name` flag is required to avoid ambiguity.
 
 ```bash
-tpl '{{ . }}' --file foo.tpl '--glob templates/*.tpl'         # default will be used
+tpl '{{ . }}' --file foo.tpl --glob 'templates/*.tpl'         # default will be used
 tpl --file foo.tpl                                            # foo.tpl will be used
 tpl --file foo.tpl --glob 'templates/*.tpl' --name foo.tpl    # the --name flag is required to select a template by name
 ```
