@@ -3,7 +3,7 @@
 ## JSON to HTML
 
 ```bash
-curl -s https://jsonplaceholder.typicode.com/users | tpl -f assets/examples/users.html.tpl
+curl -s https://jsonplaceholder.typicode.com/users | tpl -f examples/users.html.tpl
 ```
 
 ## JSON to Table
@@ -21,5 +21,5 @@ echo 'foo: [bar, baz]' | tpl '{{ toPrettyJson . }}' -d yaml
 ## Create a Certificate
 
 ```bash
-tpl -f assets/examples/cert.yaml.tpl
+tpl -f examples/cert.yaml.tpl
 ```
