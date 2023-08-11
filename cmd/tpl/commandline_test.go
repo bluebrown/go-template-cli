@@ -126,12 +126,12 @@ func Test_commandLine(t *testing.T) {
 				if err == nil {
 					t.Fatalf("want error but got none")
 				}
-				ok, err := regexp.MatchString(tt.wantErrorMatch, err.Error())
-				if err != nil {
-					t.Fatal(err)
+				ok, err2 := regexp.MatchString(tt.wantErrorMatch, err.Error())
+				if err2 != nil {
+					t.Fatal(err2)
 				}
 				if !ok {
-					t.Fatalf("wrong error: got %q but want %q", err.Error(), tt.wantErrorMatch)
+					t.Fatalf("wrong error: got %v but want %q", err, tt.wantErrorMatch)
 				}
 				return
 			} else if err != nil {
