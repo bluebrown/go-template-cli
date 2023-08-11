@@ -52,14 +52,40 @@ func Test_commandLine(t *testing.T) {
 		{
 			name:       "parse file",
 			giveInput:  strings.NewReader(`{"fruits": {"mango": "yummy"}}`),
-			giveArgs:   []string{"--file", "testdata/single.tpl"},
+			giveArgs:   []string{"--file", "testdata/mango.tpl"},
 			wantOutput: "yummy\n\n",
 		},
 		{
 			name:       "parse glob",
-			giveInput:  strings.NewReader(`{"fruits": {"mango": "yummy"}}`),
+			giveInput:  strings.NewReader(`{"fruits": {"mango": "yummy", "apple": "yuk"}}`),
+			giveArgs:   []string{"--glob", "testdata/*.tpl", "--name", "apple.tpl"},
+			wantOutput: "yuk\n\n",
+		},
+		{
+			name:       "require name",
+			giveInput:  strings.NewReader(`{}`),
 			giveArgs:   []string{"--glob", "testdata/*.tpl"},
-			wantOutput: "yummy\n\n",
+			wantErr:    true,
+			wantErrMsg: `the --name flag is required when multiple templates are defined and no default template exists; defined templates are: "apple.tpl", "mango.tpl"`,
+		},
+		{
+			name:       "require template",
+			giveInput:  strings.NewReader(`{}`),
+			wantErr:    true,
+			wantErrMsg: "no templates found",
+		},
+		{
+			name:       "no value default",
+			giveInput:  strings.NewReader(`{}`),
+			giveArgs:   []string{"{{.nope}}"},
+			wantOutput: "<no value>\n",
+		},
+		{
+			name:       "no value error",
+			giveInput:  strings.NewReader(`{}`),
+			giveArgs:   []string{"{{.nope}}", "--option", "missingkey=error"},
+			wantErr:    true,
+			wantErrMsg: `error executing template: template: _gotpl_default:1:2: executing "_gotpl_default" at <.nope>: map has no entry for key "nope"`,
 		},
 	}
 	for _, tt := range tests {
