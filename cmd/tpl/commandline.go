@@ -22,7 +22,7 @@ type commandLineOptions struct {
 	globs        []string
 	templateName string
 	options      []string
-	decoder      decoderkind
+	decoder      decoder
 	noNewline    bool
 }
 
@@ -30,7 +30,7 @@ type commandLineOptions struct {
 func defaultOptions() *commandLineOptions {
 	return &commandLineOptions{
 		defaultTemplateName: "_gotpl_default",
-		decoder:             decoderkindJSON,
+		decoder:             decodeJson,
 	}
 }
 
@@ -43,7 +43,7 @@ func (opts *commandLineOptions) initFlags(fs *pflag.FlagSet) {
 	fs.StringArrayVarP(&opts.files, "file", "f", opts.files, "template file path. Can be specified multiple times")
 	fs.StringArrayVarP(&opts.globs, "glob", "g", opts.globs, "template file glob. Can be specified multiple times")
 	fs.StringVarP(&opts.templateName, "name", "n", opts.templateName, "if specified, execute the template with the given name")
-	fs.VarP(&opts.decoder, "decoder", "d", "decoder to use for input data. Supported values: json, yaml, toml")
+	fs.VarP(&opts.decoder, "decoder", "d", "decoder to use for input data. Supported values: json, yaml, toml (default \"json\")")
 	fs.StringArrayVar(&opts.options, "option", opts.options, "option to pass to the template engine. Can be specified multiple times")
 	fs.BoolVar(&opts.noNewline, "no-newline", opts.noNewline, "do not print newline at the end of the output")
 }
@@ -85,7 +85,7 @@ func commandLine(ctx context.Context, args []string, input io.Reader, output io.
 	}
 
 	// determine the template to use
-	opts.templateName, err = selectedTemplate(opts.templateName, opts.defaultTemplateName, fs.Args(), templates)
+	templateName, err := selectedTemplate(opts.templateName, opts.defaultTemplateName, fs.Args(), templates)
 	if err != nil {
 		return fmt.Errorf("select template: %w", err)
 	}
@@ -93,15 +93,15 @@ func commandLine(ctx context.Context, args []string, input io.Reader, output io.
 	// data is used to store the decoded input
 	var data any
 
-	// if there is a reader, decode the data from it
+	// decode the input stream, if any
 	if input != nil {
-		if err := decoderMap[opts.decoder](input, &data); err != nil {
-			return fmt.Errorf("error decoding input: %v", err)
+		if err := opts.decoder(input, &data); err != nil {
+			return fmt.Errorf("decode input: %w", err)
 		}
 	}
 
 	// execute the template with the given name and optional data from stdin
-	if err := tpl.ExecuteTemplate(output, opts.templateName, data); err != nil {
+	if err := tpl.ExecuteTemplate(output, templateName, data); err != nil {
 		return fmt.Errorf("error executing template: %v", err)
 	}
 
