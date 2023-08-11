@@ -2,11 +2,13 @@ package main
 
 import (
 	"bytes"
-	"context"
+	"io"
 	"os"
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/spf13/pflag"
 )
 
 func Test_commandLine(t *testing.T) {
@@ -63,7 +65,7 @@ func Test_commandLine(t *testing.T) {
 		{
 			name:           "flag help",
 			giveArgs:       []string{"-h"},
-			wantErrorMatch: "parse flags: pflag: help requested",
+			wantErrorMatch: "pflag: help requested",
 		},
 		{
 			name:       "no value default",
@@ -99,7 +101,7 @@ func Test_commandLine(t *testing.T) {
 			name:           "decoder invalid",
 			giveInput:      `foo = "bar"`,
 			giveArgs:       []string{"--no-newline", "--decoder=yikes", `test: {{.foo}}`},
-			wantErrorMatch: "invalid argument",
+			wantErrorMatch: `unsupported decoder "yikes"`,
 		},
 		{
 			FIXME:      "the parsing logic doesnt detect the flag due to the equal sign",
@@ -107,6 +109,18 @@ func Test_commandLine(t *testing.T) {
 			giveInput:  `{"fruits": {"mango": "yummy"}}`,
 			giveArgs:   []string{"--file=testdata/mango.tpl"},
 			wantOutput: "yummy\n\n",
+		},
+		{
+			name:       "yaml string keys",
+			giveInput:  `key: value`,
+			giveArgs:   []string{"--no-newline", "-d=yaml", `{{printf "%#v" .}}`},
+			wantOutput: `map[string]interface {}{"key":"value"}`,
+		},
+		{
+			name:       "nil data",
+			giveInput:  "",
+			giveArgs:   []string{`{{.}}`},
+			wantOutput: "<no value>\n",
 		},
 	}
 	for _, tt := range tests {
@@ -120,7 +134,12 @@ func Test_commandLine(t *testing.T) {
 
 			output := &bytes.Buffer{}
 
-			err := commandLine(context.Background(), tt.giveArgs, strings.NewReader(tt.giveInput), output)
+			var in io.Reader
+			if tt.giveInput != "" {
+				in = strings.NewReader(tt.giveInput)
+			}
+
+			err := new(pflag.NewFlagSet(tt.name, pflag.ContinueOnError)).run(tt.giveArgs, in, output)
 
 			if len(tt.wantErrorMatch) > 0 {
 				if err == nil {
