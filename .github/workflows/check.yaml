@@ -1,0 +1,14 @@
+name: check
+on:
+  workflow_dispatch: {}
+  pull_request: {}
+  push:
+    branches: [main]
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    container: golang:1.21
+    steps:
+    - uses: actions/checkout@v3
+    - run: make vet
+    - run: make test
