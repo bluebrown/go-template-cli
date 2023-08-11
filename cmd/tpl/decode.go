@@ -9,6 +9,16 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// decode the input stream into context data
+func (cli *state) decode(r io.Reader) (any, error) {
+	if r == nil || cli.decoder == nil {
+		return nil, nil
+	}
+	var data any
+	err := cli.decoder(r, &data)
+	return data, err
+}
+
 type decoder func(in io.Reader, out any) error
 
 func (dec decoder) String() string { return "" }

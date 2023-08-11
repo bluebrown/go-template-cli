@@ -2,12 +2,13 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"io"
 	"os"
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/spf13/pflag"
 )
 
 func Test_commandLine(t *testing.T) {
@@ -64,7 +65,7 @@ func Test_commandLine(t *testing.T) {
 		{
 			name:           "flag help",
 			giveArgs:       []string{"-h"},
-			wantErrorMatch: "parse flags: pflag: help requested",
+			wantErrorMatch: "pflag: help requested",
 		},
 		{
 			name:       "no value default",
@@ -138,7 +139,7 @@ func Test_commandLine(t *testing.T) {
 				in = strings.NewReader(tt.giveInput)
 			}
 
-			err := commandLine(context.Background(), tt.giveArgs, in, output)
+			err := new(pflag.NewFlagSet(tt.name, pflag.ContinueOnError)).run(tt.giveArgs, in, output)
 
 			if len(tt.wantErrorMatch) > 0 {
 				if err == nil {
