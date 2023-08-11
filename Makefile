@@ -1,4 +1,4 @@
-ver=0.2.0
+ver=0.3.0
 bin_dir=bin
 cmd_dir=./cmd/tpl/
 container_cli=docker
@@ -29,3 +29,11 @@ install: binaries
 
 
 .PHONY: binaries dynamic static bindir image push install
+
+.PHONY: vet
+vet:
+	go vet -race $(cmd_dir)
+
+.PHONY: test
+test:
+	go test -cover $(cmd_dir)
