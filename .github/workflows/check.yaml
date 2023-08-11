@@ -12,3 +12,5 @@ jobs:
     - uses: actions/checkout@v3
     - run: make vet
     - run: make test
+      env:
+        SKIP_FIXME: "1"

@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"os"
 	"regexp"
 	"strings"
 	"testing"
@@ -11,12 +12,71 @@ import (
 func Test_commandLine(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
-		name         string
-		giveInput    string
-		giveArgs     []string
-		wantOutput   string
-		wantErrRegex string
+		FIXME          string
+		name           string
+		giveInput      string
+		giveArgs       []string
+		wantOutput     string
+		wantErrorMatch string
 	}{
+		{
+			name:       "parse arg",
+			giveInput:  `{"fruits": {"mango": "yummy"}}`,
+			giveArgs:   []string{"{{.fruits.mango}}"},
+			wantOutput: "yummy\n",
+		},
+		{
+			name:       "parse file",
+			giveInput:  `{"fruits": {"mango": "yummy"}}`,
+			giveArgs:   []string{"--file", "testdata/mango.tpl"},
+			wantOutput: "yummy\n\n",
+		},
+		{
+			name:       "parse glob single",
+			giveInput:  `{"fruits": {"mango": "yummy"}}`,
+			giveArgs:   []string{"--glob", "testdata/ma*.tpl"},
+			wantOutput: "yummy\n\n",
+		},
+		{
+			name:       "parse multi with positional",
+			giveInput:  `{"fruits": {"kiwi": "yay"}}`,
+			giveArgs:   []string{"{{.fruits.kiwi}}", "--file", "testdata/apple.tpl", "--glob", "testdata/ma*.tpl"},
+			wantOutput: "yay\n",
+		},
+		{
+			name:       "parse multi without positional",
+			giveInput:  `{"fruits": {"avocado": "impossibru"}}`,
+			giveArgs:   []string{"--glob", "testdata/*.tpl", "--name", "avocado.tpl"},
+			wantOutput: "impossibru\n\n",
+		},
+		{
+			name:           "require name",
+			giveInput:      `{}`,
+			giveArgs:       []string{"--glob", "testdata/*.tpl"},
+			wantErrorMatch: `the --name flag is required when multiple templates are defined`,
+		},
+		{
+			name:           "require template",
+			giveInput:      `{}`,
+			wantErrorMatch: "no templates found",
+		},
+		{
+			name:           "flag help",
+			giveArgs:       []string{"-h"},
+			wantErrorMatch: "parse flags: pflag: help requested",
+		},
+		{
+			name:       "no value default",
+			giveInput:  `{}`,
+			giveArgs:   []string{"{{.nope}}"},
+			wantOutput: "<no value>\n",
+		},
+		{
+			name:           "no value error",
+			giveInput:      `{}`,
+			giveArgs:       []string{"{{.nope}}", "--option", "missingkey=error"},
+			wantErrorMatch: `map has no entry for key "nope"`,
+		},
 		{
 			name:       "decoder yaml",
 			giveInput:  "foo: bar",
@@ -36,68 +96,42 @@ func Test_commandLine(t *testing.T) {
 			wantOutput: "test: bar",
 		},
 		{
-			name:         "decoder invalid",
-			giveInput:    `foo = "bar"`,
-			giveArgs:     []string{"--no-newline", "--decoder=yikes", `test: {{.foo}}`},
-			wantErrRegex: "invalid argument",
+			name:           "decoder invalid",
+			giveInput:      `foo = "bar"`,
+			giveArgs:       []string{"--no-newline", "--decoder=yikes", `test: {{.foo}}`},
+			wantErrorMatch: "invalid argument",
 		},
 		{
-			name:         "flag help",
-			giveArgs:     []string{"-h"},
-			wantErrRegex: "parse flags: pflag: help requested",
-		},
-		{
-			name:       "parse file",
+			FIXME:      "the parsing logic doesnt detect the flag due to the equal sign",
+			name:       "parse file with equal flag",
 			giveInput:  `{"fruits": {"mango": "yummy"}}`,
-			giveArgs:   []string{"--file", "testdata/mango.tpl"},
+			giveArgs:   []string{"--file=testdata/mango.tpl"},
 			wantOutput: "yummy\n\n",
-		},
-		{
-			name:       "parse glob",
-			giveInput:  `{"fruits": {"mango": "yummy", "apple": "yuk"}}`,
-			giveArgs:   []string{"--glob", "testdata/*.tpl", "--name", "apple.tpl"},
-			wantOutput: "yuk\n\n",
-		},
-		{
-			name:         "require name",
-			giveInput:    `{}`,
-			giveArgs:     []string{"--glob", "testdata/*.tpl"},
-			wantErrRegex: `the --name flag is required when multiple templates are defined`,
-		},
-		{
-			name:         "require template",
-			giveInput:    `{}`,
-			wantErrRegex: "no templates found",
-		},
-		{
-			name:       "no value default",
-			giveInput:  `{}`,
-			giveArgs:   []string{"{{.nope}}"},
-			wantOutput: "<no value>\n",
-		},
-		{
-			name:         "no value error",
-			giveInput:    `{}`,
-			giveArgs:     []string{"{{.nope}}", "--option", "missingkey=error"},
-			wantErrRegex: `map has no entry for key "nope"`,
 		},
 	}
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.FIXME != "" && os.Getenv("SKIP_FIXME") == "1" {
+				t.SkipNow()
+			}
+
 			t.Parallel()
+
 			output := &bytes.Buffer{}
+
 			err := commandLine(context.Background(), tt.giveArgs, strings.NewReader(tt.giveInput), output)
-			if len(tt.wantErrRegex) > 0 {
+
+			if len(tt.wantErrorMatch) > 0 {
 				if err == nil {
 					t.Fatalf("want error but got none")
 				}
-				ok, err := regexp.MatchString(tt.wantErrRegex, err.Error())
+				ok, err := regexp.MatchString(tt.wantErrorMatch, err.Error())
 				if err != nil {
 					t.Fatal(err)
 				}
 				if !ok {
-					t.Fatalf("wrong error: got %q but want %q", err.Error(), tt.wantErrRegex)
+					t.Fatalf("wrong error: got %q but want %q", err.Error(), tt.wantErrorMatch)
 				}
 				return
 			} else if err != nil {
