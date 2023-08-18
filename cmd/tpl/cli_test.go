@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-func Test_commandLine(t *testing.T) {
+func Test_state_run(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
 		FIXME          string
