@@ -1,10 +1,11 @@
-name: check
+name: checks
 
 on:
   workflow_dispatch: {}
   pull_request: {}
   push:
-    branches: [main]
+    branches:
+    - main
 
 jobs:
   check:
@@ -12,11 +13,6 @@ jobs:
     container: golang:1.21
     steps:
     - uses: actions/checkout@v3
-
     - run: go vet -race ./...
-
-    - run: go test -cover ./...
-      env:
-        SKIP_FIXME: "1"
-
+    - run: SKIP_FIXME=1 go test -cover ./...
     - run: go build -buildvcs=false ./cmd/tpl && rm tpl
