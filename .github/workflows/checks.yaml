@@ -1,12 +1,10 @@
 name: checks
-
 on:
   workflow_dispatch: {}
   pull_request: {}
   push:
     branches:
     - main
-
 jobs:
   check:
     runs-on: ubuntu-22.04
@@ -14,5 +12,5 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - run: go vet -race ./...
-    - run: SKIP_FIXME=1 go test -cover ./...
+    - run: go test -cover ./...
     - run: go build -buildvcs=false ./cmd/tpl && rm tpl
