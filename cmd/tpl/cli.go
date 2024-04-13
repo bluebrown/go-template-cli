@@ -28,8 +28,6 @@ type state struct {
 	// internal state
 	flagSet  *pflag.FlagSet
 	template *template.Template
-	rawArgs  []string
-	posArgs  []string
 }
 
 // create a new cli instance and bind flags to it
@@ -102,9 +100,6 @@ func (cli *state) parseFlagset(rawArgs []string) error {
 		return err
 	}
 
-	cli.rawArgs = rawArgs
-	cli.posArgs = cli.flagSet.Args()
-
 	cli.template = baseTemplate(cli.defaultTemplateName, cli.options...)
 
 	return nil
@@ -113,7 +108,7 @@ func (cli *state) parseFlagset(rawArgs []string) error {
 // parse all positional arguments into the "default" template. should be called
 // after parseFlagset
 func (cli *state) parsePositional() (err error) {
-	for _, arg := range cli.posArgs {
+	for _, arg := range cli.flagSet.Args() {
 		cli.template, err = cli.template.Parse(arg)
 		if err != nil {
 			return fmt.Errorf("parse template: %v", err)
@@ -161,51 +156,6 @@ func (cli *state) decode(r io.Reader) (any, error) {
 	var data any
 	err := cli.decoder(r, &data)
 	return data, err
-}
-
-// render a template
-func (cli *state) render(w io.Writer, data any) error {
-	templateName, err := cli.selectTemplate()
-	if err != nil {
-		return fmt.Errorf("select template: %w", err)
-	}
-
-	if err := cli.template.ExecuteTemplate(w, templateName, data); err != nil {
-		return fmt.Errorf("execute template: %v", err)
-	}
-
-	if !cli.noNewline {
-		fmt.Fprintln(w)
-	}
-
-	return nil
-}
-
-// determine the template to execute. In the order of precedence:
-//  1. current name, if set
-//  2. default name, if at least 1 positional arg
-//  3. templates name, if exactly 1 template
-//  4. --name flag required, otherwise
-func (cli *state) selectTemplate() (string, error) {
-	templates := cli.template.Templates()
-
-	if len(templates) == 0 {
-		return "", errors.New("no templates found")
-	}
-
-	if cli.templateName != "" {
-		return cli.templateName, nil
-	}
-
-	if len(cli.posArgs) > 0 {
-		return cli.defaultTemplateName, nil
-	}
-
-	if len(templates) == 1 {
-		return templates[0].Name(), nil
-	}
-
-	return "", fmt.Errorf("the --name flag is required when multiple templates are defined and no default template exists")
 }
 
 type decoder func(in io.Reader, out any) error
@@ -260,6 +210,51 @@ func decodeJson(in io.Reader, out any) error {
 		}
 	}
 	return nil
+}
+
+// render a template
+func (cli *state) render(w io.Writer, data any) error {
+	templateName, err := cli.selectTemplate()
+	if err != nil {
+		return fmt.Errorf("select template: %w", err)
+	}
+
+	if err := cli.template.ExecuteTemplate(w, templateName, data); err != nil {
+		return fmt.Errorf("execute template: %v", err)
+	}
+
+	if !cli.noNewline {
+		fmt.Fprintln(w)
+	}
+
+	return nil
+}
+
+// determine the template to execute. In the order of precedence:
+//  1. current name, if set
+//  2. default name, if at least 1 positional arg
+//  3. templates name, if exactly 1 template
+//  4. --name flag required, otherwise
+func (cli *state) selectTemplate() (string, error) {
+	templates := cli.template.Templates()
+
+	if len(templates) == 0 {
+		return "", errors.New("no templates found")
+	}
+
+	if cli.templateName != "" {
+		return cli.templateName, nil
+	}
+
+	if len(cli.flagSet.Args()) > 0 {
+		return cli.defaultTemplateName, nil
+	}
+
+	if len(templates) == 1 {
+		return templates[0].Name(), nil
+	}
+
+	return "", fmt.Errorf("the --name flag is required when multiple templates are defined and no default template exists")
 }
 
 // construct a base templates with custom functions attached
