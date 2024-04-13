@@ -96,6 +96,8 @@ func (cli *state) parse(rawArgs []string) error {
 }
 
 func (cli *state) parseFlagset(rawArgs []string) error {
+	cli.flagSet.SortFlags = false
+
 	if err := cli.flagSet.Parse(rawArgs); err != nil {
 		return err
 	}
@@ -129,34 +131,26 @@ func (cli *state) parseFilesAndGlobs() (*template.Template, error) {
 		globIndex uint8
 	)
 
-	// FIXME if arg is like --file=foo.txt,
-	// the if conditions wont detect it
-
-	for _, arg := range cli.rawArgs {
-		if arg == "-f" || arg == "--file" {
-			// parse next file
+	cli.flagSet.Visit(func(f *pflag.Flag) {
+		switch f.Name {
+		case "file":
 			file := cli.files[fileIndex]
 			cli.template, err = cli.template.ParseFiles(file)
 			if err != nil {
-				return nil, fmt.Errorf("error parsing file %s: %v", file, err)
+				err = fmt.Errorf("error parsing file %s: %v", file, err)
 			}
 			fileIndex++
-			continue
-		}
-
-		if arg == "-g" || arg == "--glob" {
-			// parse next glob
+		case "glob":
 			glob := cli.globs[globIndex]
 			cli.template, err = cli.template.ParseGlob(glob)
 			if err != nil {
-				return nil, fmt.Errorf("error parsing glob %s: %v", glob, err)
+				err = fmt.Errorf("error parsing glob %s: %v", glob, err)
 			}
 			globIndex++
-			continue
 		}
-	}
+	})
 
-	return cli.template, nil
+	return cli.template, err
 }
 
 // decode the input stream into context data

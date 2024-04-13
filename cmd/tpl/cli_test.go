@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"io"
-	"os"
 	"regexp"
 	"strings"
 	"testing"
@@ -14,7 +13,6 @@ import (
 func Test_state_run(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
-		FIXME          string
 		name           string
 		giveInput      string
 		giveArgs       []string
@@ -104,7 +102,6 @@ func Test_state_run(t *testing.T) {
 			wantErrorMatch: `unsupported decoder "yikes"`,
 		},
 		{
-			FIXME:      "the parsing logic doesnt detect the flag due to the equal sign",
 			name:       "parse file with equal flag",
 			giveInput:  `{"fruits": {"mango": "yummy"}}`,
 			giveArgs:   []string{"--file=testdata/mango.tpl"},
@@ -126,10 +123,6 @@ func Test_state_run(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if tt.FIXME != "" && os.Getenv("SKIP_FIXME") == "1" {
-				t.SkipNow()
-			}
-
 			t.Parallel()
 
 			output := &bytes.Buffer{}
