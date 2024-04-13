@@ -130,7 +130,6 @@ func (cli *state) parseFilesAndGlobs() (*template.Template, error) {
 		fileIndex uint8
 		globIndex uint8
 	)
-
 	cli.flagSet.Visit(func(f *pflag.Flag) {
 		switch f.Name {
 		case "file":
@@ -138,6 +137,7 @@ func (cli *state) parseFilesAndGlobs() (*template.Template, error) {
 			cli.template, err = cli.template.ParseFiles(file)
 			if err != nil {
 				err = fmt.Errorf("error parsing file %s: %v", file, err)
+				return
 			}
 			fileIndex++
 		case "glob":
@@ -145,11 +145,11 @@ func (cli *state) parseFilesAndGlobs() (*template.Template, error) {
 			cli.template, err = cli.template.ParseGlob(glob)
 			if err != nil {
 				err = fmt.Errorf("error parsing glob %s: %v", glob, err)
+				return
 			}
 			globIndex++
 		}
 	})
-
 	return cli.template, err
 }
 
