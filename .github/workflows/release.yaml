@@ -27,7 +27,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GOBIN: ${{ github.workspace }}/bin
       run: |
-        bash .github/build.sh -t "$RELEASE_TAG" -o dist <<EOT
+        bash .github/build.sh -v "$RELEASE_TAG" -o dist <<EOT
         linux/amd64
         darwin/amd64
         windows/amd64
