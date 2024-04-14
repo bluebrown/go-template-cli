@@ -14,6 +14,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var version = "dev"
+
 // the state of the program
 type state struct {
 	// options
@@ -24,6 +26,7 @@ type state struct {
 	options             []string
 	decoder             decoder
 	noNewline           bool
+	showVersion         bool
 
 	// internal state
 	flagSet  *pflag.FlagSet
@@ -49,6 +52,7 @@ func new(fs *pflag.FlagSet) *state {
 	fs.VarP(&cli.decoder, "decoder", "d", "decoder to use for input data. Supported values: json, yaml, toml (default \"json\")")
 	fs.StringArrayVar(&cli.options, "option", cli.options, "option to pass to the template engine. Can be specified multiple times")
 	fs.BoolVar(&cli.noNewline, "no-newline", cli.noNewline, "do not print newline at the end of the output")
+	fs.BoolVar(&cli.showVersion, "version", cli.showVersion, "show version information and exit")
 
 	return cli
 }
@@ -57,6 +61,11 @@ func new(fs *pflag.FlagSet) *state {
 func (cli *state) run(args []string, r io.Reader, w io.Writer) (err error) {
 	if err := cli.parse(args); err != nil {
 		return fmt.Errorf("parse: %w", err)
+	}
+
+	if cli.showVersion {
+		fmt.Fprintln(w, version)
+		return nil
 	}
 
 	data, err := cli.decode(r)

@@ -91,30 +91,13 @@ If you have go installed, you can use the `go install` command to install the bi
 go install github.com/bluebrown/go-template-cli/cmd/tpl@latest
 ```
 
-### Docker
-
-The binary is also available as a [docker image](https://hub.docker.com/repository/docker/bluebrown/tpl).
-
-```shell
-curl -s https://jsonplaceholder.typicode.com/todos | docker run -i bluebrown/tpl '{{ table . }}'
-```
-
-### From source
-
-Clone the repo and use the makefile to build the binary. The make install command will move the binary to /usr/local/bin.
-
-```bash
-git clone https://github.com/bluebrown/go-template-cli
-cd tpl && make install
-```
-
 ## Example
 
 Review the [examples](https://github.com/bluebrown/go-template-cli/tree/main/assets/examples) directory, for more examples.
 
 ```bash
 curl -s https://jsonplaceholder.typicode.com/users | tpl '<table>
-  <caption>My Address Nook</caption>
+  <caption>My Address Book</caption>
   <tr>
     <th>Name</th>
     <th>Email</th>
@@ -143,7 +126,7 @@ curl -s https://jsonplaceholder.typicode.com/users | tpl '<table>
 <summary>Output</summary>
 
 <table>
-  <caption>My Address Nook</caption>
+  <caption>My Address Book</caption>
   <tr>
     <th>Name</th>
     <th>Email</th>
