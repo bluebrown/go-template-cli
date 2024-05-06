@@ -16,6 +16,8 @@ import (
 
 var version = "dev"
 
+var FatalMissingInclude = true
+
 // the state of the program
 type state struct {
 	// options
@@ -270,6 +272,6 @@ func (cli *state) selectTemplate() (string, error) {
 func baseTemplate(defaultName string, options ...string) *template.Template {
 	tpl := template.New(defaultName)
 	tpl = tpl.Option(options...)
-	tpl = tpl.Funcs(textfunc.MapClosure(sprig.TxtFuncMap(), tpl))
+	tpl = tpl.Funcs(textfunc.MapClosure(sprig.TxtFuncMap(), tpl, FatalMissingInclude))
 	return tpl
 }
