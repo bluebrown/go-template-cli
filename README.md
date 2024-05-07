@@ -4,6 +4,13 @@ Render json, yaml, & toml with go templates from the command line.
 
 The templates are executed with the [text/template](https://pkg.go.dev/text/template) package. This means they come with the additional risks and benefits of the text template engine.
 
+## Fork Status ##
+
+This is a fork of https://github.com/bluebrown/go-template-cli.  It contains the following fixes:
+
+ - Calling `include` on a template name that doesn't exist fails. Previously it silently failed.
+ - Default decoder is toml instead of json
+
 ## Synopsis
 
 ```console
@@ -88,7 +95,7 @@ chmod 755 tpl
 If you have go installed, you can use the `go install` command to install the binary.
 
 ```bash
-go install github.com/bluebrown/go-template-cli/cmd/tpl@latest
+go install github.com/mlabbe/go-template-cli/cmd/tpl@latest
 ```
 
 ## Example

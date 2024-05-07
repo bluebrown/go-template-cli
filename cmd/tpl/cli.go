@@ -44,14 +44,14 @@ func new(fs *pflag.FlagSet) *state {
 
 	cli := &state{
 		flagSet:             fs,
-		decoder:             decodeJson,
+		decoder:             decodeToml,
 		defaultTemplateName: "_gotpl_default",
 	}
 
 	fs.StringArrayVarP(&cli.files, "file", "f", cli.files, "template file path. Can be specified multiple times")
 	fs.StringArrayVarP(&cli.globs, "glob", "g", cli.globs, "template file glob. Can be specified multiple times")
 	fs.StringVarP(&cli.templateName, "name", "n", cli.templateName, "if specified, execute the template with the given name")
-	fs.VarP(&cli.decoder, "decoder", "d", "decoder to use for input data. Supported values: json, yaml, toml (default \"json\")")
+	fs.VarP(&cli.decoder, "decoder", "d", "decoder to use for input data. Supported values: json, yaml, toml (default \"toml\")")
 	fs.StringArrayVar(&cli.options, "option", cli.options, "option to pass to the template engine. Can be specified multiple times")
 	fs.BoolVar(&cli.noNewline, "no-newline", cli.noNewline, "do not print newline at the end of the output")
 	fs.BoolVar(&cli.showVersion, "version", cli.showVersion, "show version information and exit")
