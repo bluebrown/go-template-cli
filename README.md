@@ -10,6 +10,8 @@ This is a fork of https://github.com/bluebrown/go-template-cli.  It contains the
 
  - Calling `include` on a template name that doesn't exist fails. Previously it silently failed.
  - Default decoder is toml instead of json
+ - Templates missing variables immediately error out
+ - Template --options option removed
 
 ## Synopsis
 
@@ -20,7 +22,6 @@ Options:
   -g, --glob stringArray     template file glob. Can be specified multiple times
   -n, --name string          if specified, execute the template with the given name
   -d, --decoder string       decoder to use for input data. Supported values: json, yaml, toml (default "json")
-      --option stringArray   option to pass to the template engine. Can be specified multiple times
       --no-newline           do not print newline at the end of the output
   -h, --help                 show the help text
       --usage                show the short usage text
@@ -62,18 +63,11 @@ note globs need to quotes to avoid shell expansion.
 
 ## Decoders
 
-By default input data is decoded as json and passed to the template to execute. It is possible to use an alternative decoder. The supported decoders are:
+By default input data is decoded as toml and passed to the template to execute. It is possible to use an alternative decoder. The supported decoders are:
 
 - json
 - yaml
 - toml
-
-While json could technically be decoded using the yaml decoder, this is not done by default for performance reasons.
-
-## Options
-
-The `--options` flag is passed to the template engine. Possible options can be found in the [documentation of the template engine](https://pkg.go.dev/text/template#Template.Option).
-The only option currently known is `missingkey`. Since the input data is decoded into `interface{}`, setting `missingkey=zero` will show `<no value>`, if the key does not exist, which is the same as the default. However, `missingkey=error` has some actual use cases.
 
 ## Functions
 

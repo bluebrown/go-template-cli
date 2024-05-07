@@ -16,7 +16,9 @@ import (
 
 var version = "dev"
 
+// always strict
 var FatalMissingInclude = true
+var TemplateOptions = "missingkey=error"
 
 // the state of the program
 type state struct {
@@ -25,7 +27,6 @@ type state struct {
 	files               []string
 	globs               []string
 	templateName        string
-	options             []string
 	decoder             decoder
 	noNewline           bool
 	showVersion         bool
@@ -52,7 +53,6 @@ func new(fs *pflag.FlagSet) *state {
 	fs.StringArrayVarP(&cli.globs, "glob", "g", cli.globs, "template file glob. Can be specified multiple times")
 	fs.StringVarP(&cli.templateName, "name", "n", cli.templateName, "if specified, execute the template with the given name")
 	fs.VarP(&cli.decoder, "decoder", "d", "decoder to use for input data. Supported values: json, yaml, toml (default \"toml\")")
-	fs.StringArrayVar(&cli.options, "option", cli.options, "option to pass to the template engine. Can be specified multiple times")
 	fs.BoolVar(&cli.noNewline, "no-newline", cli.noNewline, "do not print newline at the end of the output")
 	fs.BoolVar(&cli.showVersion, "version", cli.showVersion, "show version information and exit")
 
@@ -111,7 +111,7 @@ func (cli *state) parseFlagset(rawArgs []string) error {
 		return err
 	}
 
-	cli.template = baseTemplate(cli.defaultTemplateName, cli.options...)
+	cli.template = baseTemplate(cli.defaultTemplateName)
 
 	return nil
 }
@@ -269,9 +269,10 @@ func (cli *state) selectTemplate() (string, error) {
 }
 
 // construct a base templates with custom functions attached
-func baseTemplate(defaultName string, options ...string) *template.Template {
+func baseTemplate(defaultName string) *template.Template {
+
 	tpl := template.New(defaultName)
-	tpl = tpl.Option(options...)
+	tpl = tpl.Option(TemplateOptions)
 	tpl = tpl.Funcs(textfunc.MapClosure(sprig.TxtFuncMap(), tpl, FatalMissingInclude))
 	return tpl
 }
