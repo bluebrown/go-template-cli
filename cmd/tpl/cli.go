@@ -14,7 +14,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var version = "dev"
+var version = "github.com/mlabbe/go-template-cli"
 
 // always strict
 var FatalMissingInclude = true
