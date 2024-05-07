@@ -121,13 +121,12 @@ func Test_state_run(t *testing.T) {
 		},
 		{
 			name:       "issue-19-1",
-			giveInput:  "",
+			giveInput:  `{"fruits": {"mango": "yummy"}}`,
 			giveArgs:   []string{"-f", "testdata/apple.tpl", "-f", "testdata/mango.tpl", "-n", "mango.tpl"},
 			wantOutput: "yummy\n\n",
 		},
 		{
 			name:           "issue-19-2",
-			giveInput:      "",
 			giveArgs:       []string{"-f", "testdata/apple.tpl", "-f", "testdata/mango.tpl"},
 			wantErrorMatch: `the --name flag is required when multiple templates are defined`,
 		},

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 	"text/template"
 
 	"github.com/BurntSushi/toml"
@@ -95,7 +96,7 @@ func (cli *state) parse(rawArgs []string) error {
 		return fmt.Errorf("parse pos args: %w", err)
 	}
 
-	if _, err := cli.parseFilesAndGlobs(); err != nil {
+	if _, err := cli.parseFilesAndGlobs(rawArgs); err != nil {
 		return fmt.Errorf("parse opt args: %w", err)
 	}
 
@@ -128,32 +129,31 @@ func (cli *state) parsePositional() (err error) {
 
 // parse files and globs in the order they were specified, to align with go's
 // template engine. should be called after parseFlagset
-func (cli *state) parseFilesAndGlobs() (*template.Template, error) {
+func (cli *state) parseFilesAndGlobs(rawArgs []string) (*template.Template, error) {
 	var (
 		err       error
 		fileIndex uint8
 		globIndex uint8
 	)
-	cli.flagSet.Visit(func(f *pflag.Flag) {
-		switch f.Name {
-		case "file":
+	for _, arg := range rawArgs {
+		if strings.HasPrefix(arg, "-f") || strings.HasPrefix(arg, "--file") {
 			file := cli.files[fileIndex]
 			cli.template, err = cli.template.ParseFiles(file)
 			if err != nil {
 				err = fmt.Errorf("error parsing file %s: %v", file, err)
-				return
+				break
 			}
 			fileIndex++
-		case "glob":
+		} else if strings.HasPrefix(arg, "-g") || strings.HasPrefix(arg, "--glob") {
 			glob := cli.globs[globIndex]
 			cli.template, err = cli.template.ParseGlob(glob)
 			if err != nil {
 				err = fmt.Errorf("error parsing glob %s: %v", glob, err)
-				return
+				break
 			}
 			globIndex++
 		}
-	})
+	}
 	return cli.template, err
 }
 
