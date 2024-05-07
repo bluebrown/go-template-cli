@@ -71,18 +71,9 @@ By default input data is decoded as toml and passed to the template to execute. 
 
 ## Functions
 
-Next to the builtin functions, [Sprig functions](http://masterminds.github.io/sprig/) and [treasure-map functions](https://github.com/bluebrown/treasure-map) are available.
+Next to the builtin functions, [Sprig functions](http://masterminds.github.io/sprig/) and [treasure-map functions](https://github.com/mlabbe/treasure-map) are available.
 
 ## Installation
-
-### Binary
-
-Download the binary from the [release page](https://github.com/bluebrown/go-template-cli/releases). For example
-
-```bash
-curl -fsSL https://github.com/bluebrown/go-template-cli/releases/latest/download/tpl-linux-amd64 >tpl
-chmod 755 tpl
-```
 
 ### Go
 

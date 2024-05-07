@@ -9,7 +9,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/Masterminds/sprig/v3"
-	"github.com/bluebrown/treasure-map/textfunc"
+	"github.com/mlabbe/treasure-map/textfunc"
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v3"
 )
