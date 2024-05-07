@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/bluebrown/go-template-cli/compare/v0.3.0...v0.3.1) (2024-05-07)
+
+
+### Bug Fixes
+
+* flag parsing ([#20](https://github.com/bluebrown/go-template-cli/issues/20)) ([8592ace](https://github.com/bluebrown/go-template-cli/commit/8592ace899123bfaf86e888900b9fe72e836c5a1))
+
 ## [0.3.0](https://github.com/bluebrown/go-template-cli/compare/v0.2.0...v0.3.0) (2024-04-14)
 
 
