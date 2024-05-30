@@ -12,6 +12,7 @@ import (
 	"github.com/mlabbe/treasure-map/textfunc"
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v3"
+	"os"
 )
 
 var version = "github.com/mlabbe/go-template-cli"
@@ -30,6 +31,8 @@ type state struct {
 	decoder             decoder
 	noNewline           bool
 	showVersion         bool
+	preservePreamble    bool
+	outputFilename      string
 
 	// internal state
 	flagSet  *pflag.FlagSet
@@ -52,17 +55,38 @@ func new(fs *pflag.FlagSet) *state {
 	fs.StringArrayVarP(&cli.files, "file", "f", cli.files, "template file path. Can be specified multiple times")
 	fs.StringArrayVarP(&cli.globs, "glob", "g", cli.globs, "template file glob. Can be specified multiple times")
 	fs.StringVarP(&cli.templateName, "name", "n", cli.templateName, "if specified, execute the template with the given name")
+	fs.StringVarP(&cli.outputFilename, "output-file", "o", "", "output filename (outputs to stdout if unspecified)")
 	fs.VarP(&cli.decoder, "decoder", "d", "decoder to use for input data. Supported values: json, yaml, toml (default \"toml\")")
 	fs.BoolVar(&cli.noNewline, "no-newline", cli.noNewline, "do not print newline at the end of the output")
 	fs.BoolVar(&cli.showVersion, "version", cli.showVersion, "show version information and exit")
+	fs.BoolVar(&cli.preservePreamble, "preserve-preamble", cli.preservePreamble, "Preserve build edge psecification comments in output file")
 
 	return cli
+}
+
+func (cli *state) replaceOutputWriterFromCli(w io.Writer) (io.Writer, error) {
+
+	if cli.outputFilename == "" {
+		return w, nil
+	}
+
+	file, err := os.Create(cli.outputFilename)
+	if err != nil {
+		return nil, err
+	}
+
+	return file, err
 }
 
 // parse the options and input, decode the input and render the result
 func (cli *state) run(args []string, r io.Reader, w io.Writer) (err error) {
 	if err := cli.parse(args); err != nil {
 		return fmt.Errorf("parse: %w", err)
+	}
+
+	w, err = cli.replaceOutputWriterFromCli(w)
+	if err != nil {
+		return fmt.Errorf("output file: %w", err)
 	}
 
 	if cli.showVersion {

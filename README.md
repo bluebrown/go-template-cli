@@ -12,6 +12,7 @@ This is a fork of https://github.com/bluebrown/go-template-cli.  It contains the
  - Default decoder is toml instead of json
  - Templates missing variables immediately error out
  - Template --options option removed
+ - New optional `--output-file` argument writes to a file instead of relying on piping
 
 ## Synopsis
 
