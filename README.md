@@ -6,13 +6,16 @@ The templates are executed with the [text/template](https://pkg.go.dev/text/temp
 
 ## Fork Status ##
 
-This is a fork of https://github.com/bluebrown/go-template-cli.  It contains the following fixes:
+This is a fork of https://github.com/bluebrown/go-template-cli.  It contains the following changes:
 
  - Calling `include` on a template name that doesn't exist fails. Previously it silently failed.
  - Default decoder is toml instead of json
  - Templates missing variables immediately error out
  - Template --options option removed
  - New optional `--output-file` argument writes to a file instead of relying on piping
+ - New option `--preserve-preamble` preserves build edge specification in output file header
+ 
+As these changes are use-case driven, the fork is considered permanent.
 
 ## Synopsis
 

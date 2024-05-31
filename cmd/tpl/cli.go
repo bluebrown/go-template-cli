@@ -59,7 +59,7 @@ func new(fs *pflag.FlagSet) *state {
 	fs.VarP(&cli.decoder, "decoder", "d", "decoder to use for input data. Supported values: json, yaml, toml (default \"toml\")")
 	fs.BoolVar(&cli.noNewline, "no-newline", cli.noNewline, "do not print newline at the end of the output")
 	fs.BoolVar(&cli.showVersion, "version", cli.showVersion, "show version information and exit")
-	fs.BoolVar(&cli.preservePreamble, "preserve-preamble", cli.preservePreamble, "Preserve build edge psecification comments in output file")
+	fs.BoolVarP(&cli.preservePreamble, "preserve-preamble", "p", cli.preservePreamble, "Preserve build edge specification comments in output file")
 
 	return cli
 }
@@ -84,11 +84,6 @@ func (cli *state) run(args []string, r io.Reader, w io.Writer) (err error) {
 		return fmt.Errorf("parse: %w", err)
 	}
 
-	w, err = cli.replaceOutputWriterFromCli(w)
-	if err != nil {
-		return fmt.Errorf("output file: %w", err)
-	}
-
 	if cli.showVersion {
 		fmt.Fprintln(w, version)
 		return nil
@@ -98,6 +93,25 @@ func (cli *state) run(args []string, r io.Reader, w io.Writer) (err error) {
 	if err != nil {
 		return fmt.Errorf("decode: %w", err)
 	}
+
+	preamble := ""
+	if cli.preservePreamble {
+		if cli.outputFilename == "" {
+			return fmt.Errorf("--preserve-preamble specified but output is stdout.  Specify output filename with -o")
+		}
+
+		preamble, err = GetPreamble(cli.outputFilename)
+		if err != nil {
+			return fmt.Errorf("get preamble: %w", err)
+		}
+	}
+
+	w, err = cli.replaceOutputWriterFromCli(w)
+	if err != nil {
+		return fmt.Errorf("output file: %w", err)
+	}
+
+	fmt.Fprintf(w, "%s", preamble)
 
 	if err := cli.render(w, data); err != nil {
 		return fmt.Errorf("render: %w", err)
