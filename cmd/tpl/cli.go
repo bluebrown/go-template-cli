@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v3"
 	"os"
+	"path"
 )
 
 var version = "github.com/mlabbe/go-template-cli"
@@ -52,8 +53,7 @@ func new(fs *pflag.FlagSet) *state {
 		defaultTemplateName: "_gotpl_default",
 	}
 
-	fs.StringArrayVarP(&cli.files, "file", "f", cli.files, "template file path. Can be specified multiple times")
-	fs.StringArrayVarP(&cli.globs, "glob", "g", cli.globs, "template file glob. Can be specified multiple times")
+	fs.StringArrayVarP(&cli.globs, "glob", "g", cli.globs, "template file glob. Can be specified multiple times. Make sure not to shell expand the glob.")
 	fs.StringVarP(&cli.templateName, "name", "n", cli.templateName, "if specified, execute the template with the given name")
 	fs.StringVarP(&cli.outputFilename, "output-file", "o", "", "output filename (outputs to stdout if unspecified)")
 	fs.VarP(&cli.decoder, "decoder", "d", "decoder to use for input data. Supported values: json, yaml, toml (default \"toml\")")
@@ -131,10 +131,6 @@ func (cli *state) parse(rawArgs []string) error {
 		return fmt.Errorf("parse raw args: %s", err)
 	}
 
-	if err := cli.parsePositional(); err != nil {
-		return fmt.Errorf("parse pos args: %w", err)
-	}
-
 	if _, err := cli.parseFilesAndGlobs(); err != nil {
 		return fmt.Errorf("parse opt args: %w", err)
 	}
@@ -154,18 +150,6 @@ func (cli *state) parseFlagset(rawArgs []string) error {
 	return nil
 }
 
-// parse all positional arguments into the "default" template. should be called
-// after parseFlagset
-func (cli *state) parsePositional() (err error) {
-	for _, arg := range cli.flagSet.Args() {
-		cli.template, err = cli.template.Parse(arg)
-		if err != nil {
-			return fmt.Errorf("parse template: %v", err)
-		}
-	}
-	return nil
-}
-
 // parse files and globs in the order they were specified, to align with go's
 // template engine. should be called after parseFlagset
 func (cli *state) parseFilesAndGlobs() (*template.Template, error) {
@@ -174,6 +158,8 @@ func (cli *state) parseFilesAndGlobs() (*template.Template, error) {
 		fileIndex uint8
 		globIndex uint8
 	)
+
+	// todo: get files from positional args instead.
 	cli.flagSet.Visit(func(f *pflag.Flag) {
 		switch f.Name {
 		case "file":
@@ -194,6 +180,14 @@ func (cli *state) parseFilesAndGlobs() (*template.Template, error) {
 			globIndex++
 		}
 	})
+
+	for _, templatePath := range cli.flagSet.Args() {
+		cli.template, err = cli.template.ParseFiles(templatePath)
+		if err != nil {
+			return nil, fmt.Errorf("error parsing file %s: %v", templatePath, err)
+		}
+	}
+
 	return cli.template, err
 }
 
@@ -279,11 +273,6 @@ func (cli *state) render(w io.Writer, data any) error {
 	return nil
 }
 
-// determine the template to execute. In the order of precedence:
-//  1. current name, if set
-//  2. default name, if at least 1 positional arg
-//  3. templates name, if exactly 1 template
-//  4. --name flag required, otherwise
 func (cli *state) selectTemplate() (string, error) {
 	templates := cli.template.Templates()
 
@@ -291,14 +280,20 @@ func (cli *state) selectTemplate() (string, error) {
 		return "", errors.New("no templates found")
 	}
 
+	// cli --name sets this
 	if cli.templateName != "" {
 		return cli.templateName, nil
 	}
 
+	// template name from command line positional args
 	if len(cli.flagSet.Args()) > 0 {
-		return cli.defaultTemplateName, nil
+		templatePath := cli.flagSet.Args()[0]
+		templateFilename := path.Base(templatePath)
+
+		return templateFilename, nil
 	}
 
+	// there's only one template anyway, so just pick it
 	if len(templates) == 1 {
 		return templates[0].Name(), nil
 	}
