@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"runtime/debug"
 	"strings"
 	"text/template"
 
@@ -15,9 +16,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var version = "dev"
-
 type commandLine struct {
+	versionTag string
+
 	// options
 	defaultTemplateName string
 	files               []string
@@ -27,6 +28,7 @@ type commandLine struct {
 	decoder             decoder
 	noNewline           bool
 	showVersion         bool
+	showBuildInfo       bool
 
 	// internal state
 	flagSet  *pflag.FlagSet
@@ -35,12 +37,13 @@ type commandLine struct {
 
 // create a New cli instance and bind flags to it
 // flag.Parse is called on run
-func New(fs *pflag.FlagSet) *commandLine {
+func New(tag string, fs *pflag.FlagSet) *commandLine {
 	if fs == nil {
 		fs = pflag.CommandLine
 	}
 
 	cli := &commandLine{
+		versionTag:          tag,
 		flagSet:             fs,
 		decoder:             decodeJson,
 		defaultTemplateName: "_gotpl_default",
@@ -53,8 +56,19 @@ func New(fs *pflag.FlagSet) *commandLine {
 	fs.StringArrayVar(&cli.options, "option", cli.options, "option to pass to the template engine. Can be specified multiple times")
 	fs.BoolVar(&cli.noNewline, "no-newline", cli.noNewline, "do not print newline at the end of the output")
 	fs.BoolVar(&cli.showVersion, "version", cli.showVersion, "show version information and exit")
+	fs.BoolVar(&cli.showBuildInfo, "info", cli.showBuildInfo, "show debug build info and exit")
 
 	return cli
+}
+
+func (cli *commandLine) WriteInfo(w io.Writer) {
+	fmt.Fprintf(w, "version: %s\n", cli.versionTag)
+	fmt.Fprintf(w, "build:\n")
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, s := range info.Settings {
+			fmt.Fprintf(w, "\t%s=%s\n", s.Key, s.Value)
+		}
+	}
 }
 
 // parse the options and input, decode the input and render the result
@@ -64,7 +78,12 @@ func (cli *commandLine) Run(args []string, r io.Reader, w io.Writer) (err error)
 	}
 
 	if cli.showVersion {
-		fmt.Fprintln(w, version)
+		fmt.Fprintf(w, "%s", cli.versionTag)
+		return nil
+	}
+
+	if cli.showBuildInfo {
+		cli.WriteInfo(w)
 		return nil
 	}
 

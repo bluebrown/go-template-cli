@@ -143,7 +143,7 @@ func Test_state_run(t *testing.T) {
 				in = strings.NewReader(tt.giveInput)
 			}
 
-			err := New(pflag.NewFlagSet(tt.name, pflag.ContinueOnError)).Run(tt.giveArgs, in, output)
+			err := New("test", pflag.NewFlagSet(tt.name, pflag.ContinueOnError)).Run(tt.giveArgs, in, output)
 
 			if len(tt.wantErrorMatch) > 0 {
 				if err == nil {

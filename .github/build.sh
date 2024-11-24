@@ -21,12 +21,16 @@ else
 fi
 
 mkdir -p "$dest"
+
 for build in "${targets[@]}"; do
   os="$(echo "$build" | cut -d'/' -f1)"
   arch="$(echo "$build" | cut -d'/' -f2)"
+
   echo "Building for $os/$arch"
+
   GOOS="$os" GOARCH="$arch" go build \
     -o "$dest/tpl-$os-$arch" \
     -ldflags "-w -s -X main.version=$vers" \
     ./cmd/tpl
+
 done

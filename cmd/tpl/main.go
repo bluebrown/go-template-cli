@@ -8,6 +8,8 @@ import (
 	cli "github.com/bluebrown/go-template-cli"
 )
 
+var version = "dev"
+
 func main() {
 	// reader may be used, if possible
 	var input io.Reader
@@ -20,7 +22,7 @@ func main() {
 	}
 
 	// try to run the program
-	err := cli.New(nil).Run(os.Args[1:], input, os.Stdout)
+	err := cli.New(version, nil).Run(os.Args[1:], input, os.Stdout)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(2)
