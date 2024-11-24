@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	cli "github.com/bluebrown/go-template-cli"
 )
 
 func main() {
@@ -18,7 +20,7 @@ func main() {
 	}
 
 	// try to run the program
-	err := new(nil).run(os.Args[1:], input, os.Stdout)
+	err := cli.New(nil).Run(os.Args[1:], input, os.Stdout)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(2)

@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"encoding/json"
@@ -10,15 +10,14 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/Masterminds/sprig/v3"
-	"github.com/bluebrown/treasure-map/textfunc"
+	"github.com/bluebrown/go-template-cli/textfunc"
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v3"
 )
 
 var version = "dev"
 
-// the state of the program
-type state struct {
+type commandLine struct {
 	// options
 	defaultTemplateName string
 	files               []string
@@ -34,14 +33,14 @@ type state struct {
 	template *template.Template
 }
 
-// create a new cli instance and bind flags to it
+// create a New cli instance and bind flags to it
 // flag.Parse is called on run
-func new(fs *pflag.FlagSet) *state {
+func New(fs *pflag.FlagSet) *commandLine {
 	if fs == nil {
 		fs = pflag.CommandLine
 	}
 
-	cli := &state{
+	cli := &commandLine{
 		flagSet:             fs,
 		decoder:             decodeJson,
 		defaultTemplateName: "_gotpl_default",
@@ -59,7 +58,7 @@ func new(fs *pflag.FlagSet) *state {
 }
 
 // parse the options and input, decode the input and render the result
-func (cli *state) run(args []string, r io.Reader, w io.Writer) (err error) {
+func (cli *commandLine) Run(args []string, r io.Reader, w io.Writer) (err error) {
 	if err := cli.parse(args); err != nil {
 		return fmt.Errorf("parse: %w", err)
 	}
@@ -87,7 +86,7 @@ func (cli *state) run(args []string, r io.Reader, w io.Writer) (err error) {
 //  1. parse the options into the flagset
 //  2. parse positional arguments into the default template
 //  3. parse files and globs in the order specified
-func (cli *state) parse(rawArgs []string) error {
+func (cli *commandLine) parse(rawArgs []string) error {
 	if err := cli.parseFlagset(rawArgs); err != nil {
 		return fmt.Errorf("parse raw args: %s", err)
 	}
@@ -103,7 +102,7 @@ func (cli *state) parse(rawArgs []string) error {
 	return nil
 }
 
-func (cli *state) parseFlagset(rawArgs []string) error {
+func (cli *commandLine) parseFlagset(rawArgs []string) error {
 	cli.flagSet.SortFlags = false
 
 	if err := cli.flagSet.Parse(rawArgs); err != nil {
@@ -117,7 +116,7 @@ func (cli *state) parseFlagset(rawArgs []string) error {
 
 // parse all positional arguments into the "default" template. should be called
 // after parseFlagset
-func (cli *state) parsePositional() (err error) {
+func (cli *commandLine) parsePositional() (err error) {
 	for _, arg := range cli.flagSet.Args() {
 		cli.template, err = cli.template.Parse(arg)
 		if err != nil {
@@ -129,7 +128,7 @@ func (cli *state) parsePositional() (err error) {
 
 // parse files and globs in the order they were specified, to align with go's
 // template engine. should be called after parseFlagset
-func (cli *state) parseFilesAndGlobs(rawArgs []string) (*template.Template, error) {
+func (cli *commandLine) parseFilesAndGlobs(rawArgs []string) (*template.Template, error) {
 	var (
 		err       error
 		fileIndex uint8
@@ -158,7 +157,7 @@ func (cli *state) parseFilesAndGlobs(rawArgs []string) (*template.Template, erro
 }
 
 // decode the input stream into context data
-func (cli *state) decode(r io.Reader) (any, error) {
+func (cli *commandLine) decode(r io.Reader) (any, error) {
 	if r == nil || cli.decoder == nil {
 		return nil, nil
 	}
@@ -222,7 +221,7 @@ func decodeJson(in io.Reader, out any) error {
 }
 
 // render a template
-func (cli *state) render(w io.Writer, data any) error {
+func (cli *commandLine) render(w io.Writer, data any) error {
 	templateName, err := cli.selectTemplate()
 	if err != nil {
 		return fmt.Errorf("select template: %w", err)
@@ -244,7 +243,7 @@ func (cli *state) render(w io.Writer, data any) error {
 //  2. default name, if at least 1 positional arg
 //  3. templates name, if exactly 1 template
 //  4. --name flag required, otherwise
-func (cli *state) selectTemplate() (string, error) {
+func (cli *commandLine) selectTemplate() (string, error) {
 	templates := cli.template.Templates()
 
 	if len(templates) == 0 {

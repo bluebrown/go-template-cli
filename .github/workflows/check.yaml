@@ -4,7 +4,7 @@ on:
   pull_request: {}
   push:
     branches:
-    - main
+      - main
 permissions:
   contents: read
   pull-requests: read
@@ -13,8 +13,8 @@ jobs:
     name: checks
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-go@v4
-      with: {go-version: '1.22.2'}
-    - run: gofmt -s -d -e .
-    - run: go test -cover ./...
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with: {go-version: '1.23.3'}
+      - run: gofmt -s -d -e .
+      - run: go test -cover ./...

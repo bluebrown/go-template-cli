@@ -2,7 +2,7 @@ name: release
 on:
   push:
     branches:
-    - main
+      - main
 permissions:
   contents: write
   pull-requests: write
@@ -10,27 +10,26 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-    - id: release
-      uses: google-github-actions/release-please-action@v4
-      with:
-        config-file: .github/release-please-config.json
-        manifest-file: .github/release-please-manifest.json
-    - if: ${{ steps.release.outputs.release_created }}
-      uses: actions/checkout@v3
-    - if: ${{ steps.release.outputs.release_created }}
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22.2'
-    - if: ${{ steps.release.outputs.release_created }}
-      env:
-        RELEASE_TAG: ${{ steps.release.outputs.tag_name }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GOBIN: ${{ github.workspace }}/bin
-      run: |
-        bash .github/build.sh -v "$RELEASE_TAG" -o dist <<EOT
-        linux/amd64
-        darwin/amd64
-        windows/amd64
-        EOT
-        gh release upload "$RELEASE_TAG" ./dist/*
-
+      - id: release
+        uses: google-github-actions/release-please-action@v4
+        with:
+          config-file: .github/release-please-config.json
+          manifest-file: .github/release-please-manifest.json
+      - if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@v3
+      - if: ${{ steps.release.outputs.release_created }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.3'
+      - if: ${{ steps.release.outputs.release_created }}
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOBIN: ${{ github.workspace }}/bin
+        run: |
+          bash .github/build.sh -v "$RELEASE_TAG" -o dist <<EOT
+          linux/amd64
+          darwin/amd64
+          windows/amd64
+          EOT
+          gh release upload "$RELEASE_TAG" ./dist/*

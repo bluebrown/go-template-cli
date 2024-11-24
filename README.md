@@ -2,7 +2,10 @@
 
 Render json, yaml, & toml with go templates from the command line.
 
-The templates are executed with the [text/template](https://pkg.go.dev/text/template) package. This means they come with the additional risks and benefits of the text template engine.
+The templates are executed with the
+[text/template](https://pkg.go.dev/text/template) package. This means
+they come with the additional risks and benefits of the text template
+engine.
 
 ## Synopsis
 
@@ -22,7 +25,9 @@ Options:
 
 ## Input Data
 
-The input data is read from stdin via pipe or redirection. It is actually not required to provide any input data. If no input data is provided, the template is executed with nil data.
+The input data is read from stdin via pipe or redirection. It is
+actually not required to provide any input data. If no input data is
+provided, the template is executed with nil data.
 
 ```bash
 # Redirection
@@ -35,13 +40,26 @@ tpl '{{ . }}'
 
 ## Templates
 
-The default templates name is `_gotpl_default` and positional arguments are parsed into this root template. That means while its possible to specify multiple arguments, they will overwrite each other unless they use the `define` keyword to define a named template that can be referenced later when executing the template. If a named template is parsed multiple times, the last one will override the previous ones.
+The default templates name is `_gotpl_default` and positional arguments
+are parsed into this root template. That means while its possible to
+specify multiple arguments, they will overwrite each other unless they
+use the `define` keyword to define a named template that can be
+referenced later when executing the template. If a named template is
+parsed multiple times, the last one will override the previous ones.
 
-Templates from the flags `--file` and `--glob` are parsed in the order they are specified. So the override rules of the text/template package apply. If a file with the same name is specified multiple times, the last one wins. Even if they are in different directories.
+Templates from the flags `--file` and `--glob` are parsed in the order
+they are specified. So the override rules of the text/template package
+apply. If a file with the same name is specified multiple times, the
+last one wins. Even if they are in different directories.
 
-The behavior of the cli tries to stay consistent with the actual behavior of the go template engine.
+The behavior of the cli tries to stay consistent with the actual
+behavior of the go template engine.
 
-If the default template exists it will be used unless the `--name` flag is specified. If no default template exists because no positional argument has been provided, the template with the given file name is used, as long as only one file has been parsed. If multiple files have been parsed, the `--name` flag is required to avoid ambiguity.
+If the default template exists it will be used unless the `--name` flag
+is specified. If no default template exists because no positional
+argument has been provided, the template with the given file name is
+used, as long as only one file has been parsed. If multiple files have
+been parsed, the `--name` flag is required to avoid ambiguity.
 
 ```bash
 tpl '{{ . }}' --file foo.tpl --glob 'templates/*.tpl'         # default will be used
@@ -49,34 +67,49 @@ tpl --file foo.tpl                                            # foo.tpl will be 
 tpl --file foo.tpl --glob 'templates/*.tpl' --name foo.tpl    # the --name flag is required to select a template by name
 ```
 
-The ability to parse multiple templates makes sense when defining helper snippets and other named templates to reference using the builtin `template` keyword or the custom `include` function which can be used in pipelines.
+The ability to parse multiple templates makes sense when defining helper
+snippets and other named templates to reference using the builtin
+`template` keyword or the custom `include` function which can be used in
+pipelines.
 
 note globs need to quotes to avoid shell expansion.
 
 ## Decoders
 
-By default input data is decoded as json and passed to the template to execute. It is possible to use an alternative decoder. The supported decoders are:
+By default input data is decoded as json and passed to the template to
+execute. It is possible to use an alternative decoder. The supported
+decoders are:
 
 - json
 - yaml
 - toml
 
-While json could technically be decoded using the yaml decoder, this is not done by default for performance reasons.
+While json could technically be decoded using the yaml decoder, this is
+not done by default for performance reasons.
 
 ## Options
 
-The `--options` flag is passed to the template engine. Possible options can be found in the [documentation of the template engine](https://pkg.go.dev/text/template#Template.Option).
-The only option currently known is `missingkey`. Since the input data is decoded into `interface{}`, setting `missingkey=zero` will show `<no value>`, if the key does not exist, which is the same as the default. However, `missingkey=error` has some actual use cases.
+The `--options` flag is passed to the template engine. Possible options
+can be found in the [documentation of the template
+engine](https://pkg.go.dev/text/template#Template.Option).
+The only option currently known is `missingkey`. Since the input data is
+decoded into `interface{}`, setting `missingkey=zero` will show `<no
+value>`, if the key does not exist, which is the same as the default.
+However, `missingkey=error` has some actual use cases.
 
 ## Functions
 
-Next to the builtin functions, [Sprig functions](http://masterminds.github.io/sprig/) and [treasure-map functions](https://github.com/bluebrown/treasure-map) are available.
+Next to the builtin functions, [Sprig
+functions](http://masterminds.github.io/sprig/) and some [custom
+function](./textfunc/) are available.
 
 ## Installation
 
 ### Binary
 
-Download the binary from the [release page](https://github.com/bluebrown/go-template-cli/releases). For example
+Download the binary from the [release
+page](https://github.com/bluebrown/go-template-cli/releases). For
+example
 
 ```bash
 curl -fsSL https://github.com/bluebrown/go-template-cli/releases/latest/download/tpl-linux-amd64 >tpl
@@ -85,7 +118,8 @@ chmod 755 tpl
 
 ### Go
 
-If you have go installed, you can use the `go install` command to install the binary.
+If you have go installed, you can use the `go install` command to
+install the binary.
 
 ```bash
 go install github.com/bluebrown/go-template-cli/cmd/tpl@latest
@@ -93,7 +127,9 @@ go install github.com/bluebrown/go-template-cli/cmd/tpl@latest
 
 ## Example
 
-Review the [examples](https://github.com/bluebrown/go-template-cli/tree/main/assets/examples) directory, for more examples.
+Review the
+[examples](https://github.com/bluebrown/go-template-cli/tree/main/assets/examples)
+directory, for more examples.
 
 ```bash
 curl -s https://jsonplaceholder.typicode.com/users | tpl '<table>
