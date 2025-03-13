@@ -3,6 +3,7 @@
   "packages": {
     ".": {
       "release-type": "go",
+      "changelog-type": "github",
       "changelog-path": ".github/CHANGELOG.md",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
