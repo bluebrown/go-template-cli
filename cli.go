@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"runtime/debug"
 	"strings"
 	"text/template"
 
@@ -28,7 +27,6 @@ type commandLine struct {
 	decoder             decoder
 	noNewline           bool
 	showVersion         bool
-	showBuildInfo       bool
 
 	// internal state
 	flagSet  *pflag.FlagSet
@@ -56,19 +54,8 @@ func New(tag string, fs *pflag.FlagSet) *commandLine {
 	fs.StringArrayVar(&cli.options, "option", cli.options, "option to pass to the template engine. Can be specified multiple times")
 	fs.BoolVar(&cli.noNewline, "no-newline", cli.noNewline, "do not print newline at the end of the output")
 	fs.BoolVar(&cli.showVersion, "version", cli.showVersion, "show version information and exit")
-	fs.BoolVar(&cli.showBuildInfo, "info", cli.showBuildInfo, "show debug build info and exit")
 
 	return cli
-}
-
-func (cli *commandLine) WriteInfo(w io.Writer) {
-	fmt.Fprintf(w, "version: %s\n", cli.versionTag)
-	fmt.Fprintf(w, "build:\n")
-	if info, ok := debug.ReadBuildInfo(); ok {
-		for _, s := range info.Settings {
-			fmt.Fprintf(w, "\t%s=%s\n", s.Key, s.Value)
-		}
-	}
 }
 
 // parse the options and input, decode the input and render the result
@@ -79,11 +66,6 @@ func (cli *commandLine) Run(args []string, r io.Reader, w io.Writer) (err error)
 
 	if cli.showVersion {
 		fmt.Fprintf(w, "%s", cli.versionTag)
-		return nil
-	}
-
-	if cli.showBuildInfo {
-		cli.WriteInfo(w)
 		return nil
 	}
 
@@ -153,6 +135,7 @@ func (cli *commandLine) parseFilesAndGlobs(rawArgs []string) (*template.Template
 		fileIndex uint8
 		globIndex uint8
 	)
+
 	for _, arg := range rawArgs {
 		if strings.HasPrefix(arg, "-f") || strings.HasPrefix(arg, "--file") {
 			file := cli.files[fileIndex]
@@ -161,7 +144,9 @@ func (cli *commandLine) parseFilesAndGlobs(rawArgs []string) (*template.Template
 				err = fmt.Errorf("error parsing file %s: %v", file, err)
 				break
 			}
+
 			fileIndex++
+
 		} else if strings.HasPrefix(arg, "-g") || strings.HasPrefix(arg, "--glob") {
 			glob := cli.globs[globIndex]
 			cli.template, err = cli.template.ParseGlob(glob)
@@ -169,9 +154,11 @@ func (cli *commandLine) parseFilesAndGlobs(rawArgs []string) (*template.Template
 				err = fmt.Errorf("error parsing glob %s: %v", glob, err)
 				break
 			}
+
 			globIndex++
 		}
 	}
+
 	return cli.template, err
 }
 
