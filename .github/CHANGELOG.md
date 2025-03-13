@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.2 (2025-03-13)
+
+**Full Changelog**: https://github.com/bluebrown/go-template-cli/compare/v0.3.1...v0.3.2
+
 ## [0.3.1](https://github.com/bluebrown/go-template-cli/compare/v0.3.0...v0.3.1) (2024-05-07)
 
 
