@@ -26,11 +26,20 @@ for build in "${targets[@]}"; do
   os="$(echo "$build" | cut -d'/' -f1)"
   arch="$(echo "$build" | cut -d'/' -f2)"
 
-  echo "Building for $os/$arch"
+  if [[ "$arch" == *static ]]; then
+    cgo=0
+    suffix="-static"
+    arch="${arch%-static}"
+  else
+    cgo=1
+    suffix=""
+  fi
 
-  GOOS="$os" GOARCH="$arch" go build \
-    -o "$dest/tpl-$os-$arch" \
+  echo "Building for $os/$arch (CGO_ENABLED=$cgo)"
+
+  CGO_ENABLED="$cgo" \
+    GOOS="$os" GOARCH="$arch" go build \
+    -o "$dest/tpl-$os-$arch$suffix" \
     -ldflags "-w -s -X main.version=$vers" \
     ./cmd/tpl
-
 done
